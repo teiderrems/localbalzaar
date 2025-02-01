@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import * as nodemailer from 'nodemailer';
 import { SendMailDto } from '../dtos/auth/SendMailDto';
 import { OnEvent } from '@nestjs/event-emitter';
-// import { UserCreatedEvent } from '../dtos/users/UserCreatedEvent';
 import { ConfigService } from '@nestjs/config';
 
 
@@ -13,7 +12,7 @@ export class SendmailService {
   constructor(private configService: ConfigService) {
   }
 
-  @OnEvent('user.created')
+  @OnEvent('user.*')
   async sendWelcomeEmail(credential:SendMailDto): Promise<any> { //sendMailDto: SendMailDto
 
 
@@ -21,16 +20,7 @@ export class SendmailService {
     try {
       const transport = nodemailer.createTransport({
         port: 1025
-        // auth: {
-        //   type:"OAuth2",
-        //   accessToken:accessToken.token??this.configService.get<string>('GOOGLE_ACCESS_TOKEN'),
-        //   user:this.configService.get<string>('USERNAME')??'raoul.teida@gmail.com',
-        //   clientId:this.configService.get<string>('CLIENT_ID_GOOGLE'),
-        //   clientSecret:this.configService.get<string>('CLIENT_SECRET_GOOGLE'),
-        //   refreshToken:this.configService.get<string>('GOOGLE_REFRESH_TOKEN')
-        // },
       });
-
       return  await transport.sendMail({
         to:credential.email,
         from:this.configService.get<string>('FROM')??'raoul.teida@gmail.com',

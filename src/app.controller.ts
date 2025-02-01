@@ -1,15 +1,18 @@
 import { Body, Controller, HttpException, HttpStatus, Post } from '@nestjs/common';
-import { SendmailService } from './sendmail/sendmail.service';
 import { SendMailDto } from './dtos/auth/SendMailDto';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 
 @Controller()
 export class AppController {
 
-  constructor(private readonly sendmailService: SendmailService) {}
+  constructor(private eventEmitter:EventEmitter2) {}
   @Post('email')
   async sendMail(@Body() sendMailDto: SendMailDto) {
     try {
-      return await this.sendmailService.sendWelcomeEmail(sendMailDto);
+      const sdm=new SendMailDto();
+      sdm.subject="hello my dear";
+      sdm.email=sendMailDto.email;
+      return this.eventEmitter.emit('user.mail', sdm);
     }
     catch (error) {
       console.error(error);
