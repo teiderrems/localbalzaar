@@ -4,7 +4,6 @@ import { UsersController } from './users.controller';
 import { PrismaService } from 'src/prisma.service';
 import { MulterModule } from '@nestjs/platform-express';
 import { MulterConfigService } from '../../multer.config.service';
-import { MailerModule } from '@nestjs-modules/mailer';
 import { SendmailService } from '../../sendmail/sendmail.service';
 import { SendmailModule } from '../../sendmail/sendmail.module';
 

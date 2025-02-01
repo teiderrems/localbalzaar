@@ -31,7 +31,9 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
     AuthModule,
     ConfigModule,
     SendmailModule,
-    EventEmitterModule.forRoot()
+    EventEmitterModule.forRoot({
+      wildcard:true
+    })
   ],
   controllers: [
     AppController,
