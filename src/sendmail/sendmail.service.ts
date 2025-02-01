@@ -1,45 +1,41 @@
 import { Injectable } from '@nestjs/common';
 import * as nodemailer from 'nodemailer';
-import { google } from 'googleapis';
 import { SendMailDto } from '../dtos/auth/SendMailDto';
+import { OnEvent } from '@nestjs/event-emitter';
+// import { UserCreatedEvent } from '../dtos/users/UserCreatedEvent';
 import { ConfigService } from '@nestjs/config';
 
 
 @Injectable()
 export class SendmailService {
 
-  constructor(private readonly configService: ConfigService) {
+
+  constructor(private configService: ConfigService) {
   }
 
-  async sendWelcomeEmail(sendMailDto: SendMailDto): Promise<any> {
+  @OnEvent('user.created')
+  async sendWelcomeEmail(credential:SendMailDto): Promise<any> { //sendMailDto: SendMailDto
 
-    const oAuth2Client = new google.auth.OAuth2(
-      this.configService.get<string>('CLIENT_ID_GOOGLE'),
-      this.configService.get<string>('CLIENT_SECRET_GOOGLE'),
-      process.env.REDIRECT_URI??'http://localhost:3000',
-    );
 
-    oAuth2Client.setCredentials({ refresh_token:this.configService.get<string>('GOOGLE_REFRESH_TOKEN'),access_token:this.configService.get<string>('GOOGLE_ACCESS_TOKEN')});
-
+    process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0"
     try {
-      const accessToken = await oAuth2Client.getAccessToken();
       const transport = nodemailer.createTransport({
-        service: "gmail",
-        auth: {
-          type:"OAuth2",
-          accessToken:accessToken.token??this.configService.get<string>('GOOGLE_ACCESS_TOKEN'),
-          user:this.configService.get<string>('USERNAME')??'raoul.teida@gmail.com',
-          clientId:this.configService.get<string>('CLIENT_ID_GOOGLE'),
-          clientSecret:this.configService.get<string>('CLIENT_SECRET_GOOGLE'),
-          refreshToken:this.configService.get<string>('GOOGLE_REFRESH_TOKEN')
-        },
+        port: 1025
+        // auth: {
+        //   type:"OAuth2",
+        //   accessToken:accessToken.token??this.configService.get<string>('GOOGLE_ACCESS_TOKEN'),
+        //   user:this.configService.get<string>('USERNAME')??'raoul.teida@gmail.com',
+        //   clientId:this.configService.get<string>('CLIENT_ID_GOOGLE'),
+        //   clientSecret:this.configService.get<string>('CLIENT_SECRET_GOOGLE'),
+        //   refreshToken:this.configService.get<string>('GOOGLE_REFRESH_TOKEN')
+        // },
       });
 
       return  await transport.sendMail({
-        to:sendMailDto.email,
-        from:'raoul.teida@gmail.com',
-        subject:sendMailDto.subject??'Welcome to LocalBalzaar',
-        html:sendMailDto.content??`
+        to:credential.email,
+        from:this.configService.get<string>('FROM')??'raoul.teida@gmail.com',
+        subject:credential.subject??'Welcome to LocalBalzaar',
+        html:credential.content??`
      <!DOCTYPE html>
       <html lang="fr">
       <head>
@@ -89,7 +85,7 @@ export class SendmailService {
       </head>
       <body>
           <div class="container">
-              <h1>Bienvenue à bord ! ${sendMailDto.email}</h1>
+              <h1>Bienvenue à bord ! ${credential.email}</h1>
               <p>Nous sommes ravis de vous accueillir parmi nous. Préparez-vous à vivre une expérience exceptionnelle.</p>
               <p>Si vous avez des questions, n'hésitez pas à nous contacter.</p>
               <a href="http://localhost:3000/api" class="button">Commencer</a>

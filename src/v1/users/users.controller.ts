@@ -24,14 +24,12 @@ import { Role, Roles } from '../../decorators/role.decorator';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { RolesGuard } from '../../auth/roles.gaurds';
 import { QueryDto, PaginationResponseDto } from '../../dtos/QueryDto';
-import { ApiBasicAuth, ApiBearerAuth } from '@nestjs/swagger';
 
 @UseGuards(JwtAuthGuardGuard,RolesGuard)
 @Controller('v1/users')
 export class UsersController {
   constructor(private readonly usersServices: UsersService) {}
 
-  @ApiBearerAuth()
   @Get()
   @Roles(Role.ADMIN,Role.SUPERUSER)
   async findAll(@Query() pagination:QueryDto): Promise<PaginationResponseDto<UserDto>> {
@@ -43,8 +41,6 @@ export class UsersController {
     }
   }
 
-
-  @ApiBasicAuth()
   @Get(':id')
   findOne(@Param('id', ParseIntPipe) id: number): Observable<UserDto | null> {
     try {
@@ -67,7 +63,6 @@ export class UsersController {
   }),) file:Express.Multer.File,@Body() createUserDto: CreateUserDto): Promise<{id:number}> {
     try {
       createUserDto.profile = file ? `${file.filename}` : undefined;
-      console.log(createUserDto);
       return this.usersServices.create(createUserDto);
     } catch (error) {
       console.error(error);

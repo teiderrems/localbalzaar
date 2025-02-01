@@ -15,7 +15,7 @@ export class AuthService {
 
   async login(credentials: SignInDto) {
     try {
-      let user = await this.prismaService.user.findUnique({
+      const user = await this.prismaService.user.findUnique({
         where: { email: credentials.email },
         select: {
           email: true,
@@ -53,13 +53,10 @@ export class AuthService {
             secret: process.env.SECRET_KEY ?? 'ok',
             expiresIn: '1h',
           }),
-          refresh_token: this.jwtService.sign(
-            payload,
-            {
-              secret: process.env.SECRET ?? 'ok',
-              expiresIn: '1d',
-            },
-          ),
+          refresh_token: this.jwtService.sign(payload, {
+            secret: process.env.SECRET ?? 'ok',
+            expiresIn: '1d',
+          }),
         });
       }
     } catch (err) {
@@ -69,13 +66,18 @@ export class AuthService {
   }
 
   async reset_password(credentials: ResetPasswordDto) {
-    let user= await this.prismaService.user.findUnique({ where: { email: credentials.email }, select: {password: true,id: true} });
+    const user = await this.prismaService.user.findUnique({
+      where: { email: credentials.email },
+      select: { password: true, id: true },
+    });
     if (
-      !user || !(await bcrypt.compare(credentials.password, user.password!)) || credentials.code !== 'hello') {
+      !user ||
+      !(await bcrypt.compare(credentials.password, user.password!)) ||
+      credentials.code !== 'hello'
+    ) {
       return Promise.resolve(null);
-    }
-    else {
-      let salt = await bcrypt.genSalt(10);
+    } else {
+      const salt = await bcrypt.genSalt(10);
       return Promise.resolve(
         this.prismaService.user.update({
           where: { id: user.id },
@@ -88,15 +90,12 @@ export class AuthService {
   }
 
   async confirm_email(email: string): Promise<{ code: string } | null> {
-    let user: any = null;
-    this.prismaService.user
-      .findUnique({
-        where: { email },
-        select: {
-          id: true,
-        },
-      })
-      .then((value) => (user = value));
+    const user = await this.prismaService.user.findUnique({
+      where: { email },
+      select: {
+        id: true,
+      },
+    });
     if (!user) {
       return Promise.resolve(null);
     }
@@ -104,11 +103,12 @@ export class AuthService {
   }
 
   async refresh_token(refresh_token: string) {
-    if (!!refresh_token) {
+    if (refresh_token) {
       try {
-        return await this.jwtService.verifyAsync(refresh_token,{secret:process.env.SECRET_KEY});
-      }
-      catch (error) {
+        return await this.jwtService.verifyAsync(refresh_token, {
+          secret: process.env.SECRET_KEY,
+        });
+      } catch (error) {
         console.error(error);
       }
     }

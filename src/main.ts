@@ -22,14 +22,12 @@ async function bootstrap() {
     .setDescription('The localbalzaar API description')
     .setVersion('1.0')
     .addTag('localbalzaar')
-    .addBasicAuth()
-    .addBearerAuth()
     .build();
   const documentFactory = () => SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, documentFactory);
 
   app.use('/',express.static(join(process.cwd(), 'public','uploads')));
 
-  await app.listen(process.env.PORT?Number(process.env.PORT): 3000);
+  await app.listen(process.env.APP_PORT?Number(process.env.APP_PORT): 3000);
 }
 void bootstrap();

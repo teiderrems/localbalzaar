@@ -6,6 +6,8 @@ import * as bcrypt from 'bcrypt';
 import UpdateUserDto from '../../dtos/users/UpdateUserDto';
 import { CreateUserDto } from '../../dtos/users/CreateUserDto';
 import { QueryDto, PaginationResponseDto } from '../../dtos/QueryDto';
+import { EventEmitter2 } from '@nestjs/event-emitter';
+import { UserCreatedEvent } from '../../dtos/users/UserCreatedEvent';
 // import { SendmailService } from '../../sendmail/sendmail.service';
 // import { SendMailDto } from '../../dtos/auth/SendMailDto';
 
@@ -15,8 +17,10 @@ import { QueryDto, PaginationResponseDto } from '../../dtos/QueryDto';
 export class UsersService {
   constructor(
     private prisma: PrismaService,
+    private eventEmitter: EventEmitter2
     // private readonly sendmailService: SendmailService,
   ) {}
+
 
   async findAll(queries: QueryDto): Promise<PaginationResponseDto<UserDto>> {
     if (!!queries.search) {
@@ -40,15 +44,15 @@ export class UsersService {
               },
             ],
           },
-          select: {
-            id: true,
-            email: true,
-            firstname: true,
-            lastname: true,
-            phone: true,
-            profile: true,
-            createdAt: true,
-            updatedAt: true,
+          omit:{password:true},
+          include:{
+            userRole:{
+              select:{
+                role:{
+                  select:{name:true}
+                }
+              }
+            }
           },
           skip: Number(queries.offset) * Number(queries.limit),
           take: Number(queries.limit),
@@ -62,15 +66,15 @@ export class UsersService {
     }
     return {
       data: await this.prisma.user.findMany({
-        select: {
-          id: true,
-          email: true,
-          firstname: true,
-          lastname: true,
-          phone: true,
-          profile: true,
-          createdAt: true,
-          updatedAt: true,
+        omit:{password:true},
+        include:{
+          userRole:{
+            select:{
+              role:{
+                select:{name:true}
+              }
+            }
+          }
         },
         skip: Number(queries.offset) * Number(queries.limit),
         take: Number(queries.limit),
@@ -87,15 +91,15 @@ export class UsersService {
     return from(
       this.prisma.user.findUnique({
         where: { id },
-        select: {
-          id: true,
-          email: true,
-          firstname: true,
-          lastname: true,
-          phone: true,
-          profile: true,
-          createdAt: true,
-          updatedAt: true,
+        omit:{password:true},
+        include:{
+          userRole:{
+            select:{
+              role:{
+                select:{name:true}
+              }
+            }
+          }
         },
       }),
     );
@@ -106,15 +110,9 @@ export class UsersService {
     const hash = await bcrypt.hash(createDto.password, salt);
     let user = await this.prisma.user.create({
       data: { ...createDto, password: hash },
-      select: { id: true },
+      select: { id: true,email: true },
     });
-    // if (user) {
-    //   let sd=new SendMailDto();
-    //   sd.content=undefined;
-    //   sd.email=createDto.email;
-    //   return await this.sendmailService.sendWelcomeEmail(sd);
-    // }
-    return Promise.resolve(user);
+    return Promise.resolve(this.eventEmitter.emit('user.created',new UserCreatedEvent(user.email)));
   }
 
   async update(
@@ -137,7 +135,9 @@ export class UsersService {
     } catch (error) {
       console.error(error);
     }
-    return from(this.prisma.user.update({ where: { id }, data: updateDto }));
+    const user=await  this.prisma.user.update({ where: { id }, data: updateDto,select:{email:true} });
+
+    return this.eventEmitter.emit('user.updated',new UserCreatedEvent(user.email));
   }
 
   async remove(id: number): Promise<{ id: number }> {

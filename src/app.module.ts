@@ -15,6 +15,7 @@ import { AuthModule } from './auth/auth.module';
 import { MulterConfigService } from './multer.config.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { SendmailModule } from './sendmail/sendmail.module';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 
 @Module({
   imports: [
@@ -29,7 +30,8 @@ import { SendmailModule } from './sendmail/sendmail.module';
     CategoriesModule,
     AuthModule,
     ConfigModule,
-    SendmailModule
+    SendmailModule,
+    EventEmitterModule.forRoot()
   ],
   controllers: [
     AppController,
