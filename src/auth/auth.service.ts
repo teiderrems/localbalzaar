@@ -21,7 +21,7 @@ export class AuthService {
   async login(credentials: SignInDto) {
     try {
       const user = await this.prismaService.user.findUnique({
-        where: { email: credentials.email },
+        where: { email: credentials.email, emailConfirm: true },
         select: {
           email: true,
           password: true,
@@ -43,7 +43,6 @@ export class AuthService {
 
       if (
         !user ||
-        !user.emailConfirm ||
         !(await bcrypt.compare(credentials.password, user.password!))
       ) {
         return null;

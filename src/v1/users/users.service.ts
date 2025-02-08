@@ -22,22 +22,28 @@ export class UsersService {
       return {
         data: await this.prisma.user.findMany({
           where: {
-            // OR: [
-            //   {
-            email: {
-              contains: queries.search,
-            },
-            //     firstname: {
-            //       contains: queries.search,
-            //     },
-            //     phone: {
-            //       contains: queries.search,
-            //     },
-            //     lastname: {
-            //       contains: queries.search,
-            //     },
-            //   },
-            // ],
+            OR: [
+              {
+                email: {
+                  contains: queries.search,
+                },
+              },
+              {
+                firstname: {
+                  contains: queries.search,
+                },
+              },
+              {
+                phone: {
+                  contains: queries.search,
+                },
+              },
+              {
+                lastname: {
+                  contains: queries.search,
+                },
+              },
+            ],
           },
           omit: { password: true },
           include: {
@@ -51,11 +57,10 @@ export class UsersService {
           },
           skip: Number(queries.offset) * Number(queries.limit),
           take: Number(queries.limit),
-          orderBy: [
-            {
-              id: 'asc',
-            },
-          ],
+          orderBy: {
+            id: 'asc',
+            firstname: 'desc',
+          },
         }),
         total: await this.prisma.user.count(),
         pageSize: Number(queries.limit),
@@ -75,11 +80,9 @@ export class UsersService {
         },
         skip: Number(queries.offset) * Number(queries.limit),
         take: Number(queries.limit),
-        orderBy: [
-          {
-            id: 'asc',
-          },
-        ],
+        orderBy: {
+          id: 'asc',
+        },
       }),
       total: await this.prisma.user.count(),
       pageSize: Number(queries.limit),

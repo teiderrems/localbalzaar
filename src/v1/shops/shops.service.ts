@@ -15,19 +15,23 @@ export class ShopsService {
       return {
         data: await this.prismaService.shops.findMany({
           where: {
-            // OR: [
-            //   {
-            name: {
-              contains: queries.search,
-            },
-            //     address: {
-            //       contains: queries.search,
-            //     },
-            //     phone: {
-            //       contains: queries.search,
-            //     },
-            //   },
-            // ],
+            OR: [
+              {
+                name: {
+                  contains: queries.search,
+                },
+              },
+              {
+                address: {
+                  contains: queries.search,
+                },
+              },
+              {
+                phone: {
+                  contains: queries.search,
+                },
+              },
+            ],
           },
           select: {
             id: true,

@@ -15,9 +15,25 @@ export class ProductsService {
       return {
         data: await this.prismaService.product.findMany({
           where: {
-            name: {
-              contains: `%${queries.search}%`,
-            },
+            OR: [
+              {
+                name: {
+                  contains: queries.search,
+                },
+              },
+              {
+                description: {
+                  contains: queries.search,
+                },
+              },
+              {
+                shop: {
+                  name: {
+                    contains: queries.search,
+                  },
+                },
+              },
+            ],
           },
           select: {
             id: true,

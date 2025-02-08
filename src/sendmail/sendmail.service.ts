@@ -74,7 +74,7 @@ export class SendmailService {
               <h1>Bienvenue à bord ! ${credential.email}</h1>
               <p>Nous sommes ravis de vous accueillir parmi nous. Préparez-vous à vivre une expérience exceptionnelle.</p>
               <p>Si vous avez des questions, n'hésitez pas à nous contacter.</p>
-              <a href="http://localhost:3000/api" class="button">Commencer</a>
+              <a href="http://localhost:3000/v1/auth/confirm-email" class="button">Confirmer votre adresse e-mail</a>
               <p class="footer">&copy; 2025 Votre Entreprise. Tous droits réservés.</p>
           </div>
       </body>

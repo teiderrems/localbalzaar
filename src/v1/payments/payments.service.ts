@@ -16,9 +16,23 @@ export class PaymentsService {
           where: {
             order: {
               user: {
-                email: {
-                  contains: queries.search,
-                },
+                OR: [
+                  {
+                    email: {
+                      contains: queries.search,
+                    },
+                  },
+                  {
+                    firstname: {
+                      contains: queries.search,
+                    },
+                  },
+                  {
+                    lastname: {
+                      contains: queries.search,
+                    },
+                  },
+                ],
               },
             },
           },

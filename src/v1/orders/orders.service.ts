@@ -16,9 +16,23 @@ export class OrdersService {
         data: await this.prismaService.order.findMany({
           where: {
             user: {
-              email: {
-                contains: queries.search,
-              },
+              OR: [
+                {
+                  email: {
+                    contains: queries.search,
+                  },
+                },
+                {
+                  firstname: {
+                    contains: queries.search,
+                  },
+                },
+                {
+                  lastname: {
+                    contains: queries.search,
+                  },
+                },
+              ],
             },
           },
           select: {
