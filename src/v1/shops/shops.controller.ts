@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import {
   Body,
   Controller,
@@ -8,11 +10,11 @@ import {
   Param,
   ParseIntPipe,
   Patch,
-  Post, Query,
+  Post,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { ShopsService } from './shops.service';
-import { Observable } from 'rxjs';
 import { UpdateShopDto } from '../../dtos/shops/UpdateShopDto';
 import { CreateShopDto } from '../../dtos/shops/CreateShopDto';
 import { User } from '../../decorators/user.decorator';
@@ -22,8 +24,8 @@ import {
 } from '../../auth/jwt-auth.guard/jwt-auth.guard.guard';
 import { Role, Roles } from '../../decorators/role.decorator';
 import { QueryDto, PaginationResponseDto } from '../../dtos/QueryDto';
-import { ProductDto } from '../../dtos/products/ProductDto';
 import { ShopDto } from '../../dtos/shops/ShopDto';
+import { Payload } from 'src/auth/roles.gaurds';
 
 @UseGuards(JwtAuthGuardGuard)
 @Controller('v1/shops')
@@ -58,8 +60,8 @@ export class ShopsController {
   @Post()
   create(
     @Body() createShopDto: CreateShopDto,
-    @User() user: any,
-  ): Promise<{ id:number }> {
+    @User() user: Payload,
+  ): Promise<{ id: number }> {
     try {
       return this.shopsService.create(createShopDto, user);
     } catch (error) {
@@ -77,7 +79,7 @@ export class ShopsController {
   update(
     @Param('id', ParseIntPipe) id: number,
     @Body() shop: UpdateShopDto,
-  ):  Promise<{ id:number }> {
+  ): Promise<{ id: number }> {
     try {
       return this.shopsService.update(id, shop);
     } catch (error) {
@@ -92,7 +94,7 @@ export class ShopsController {
 
   @Roles(Role.ADMIN, Role.SUPERUSER)
   @Delete(':id')
-  delete(@Param('id', ParseIntPipe) id: number): Promise<{ id:number }> {
+  delete(@Param('id', ParseIntPipe) id: number): Promise<{ id: number }> {
     try {
       return this.shopsService.delete(id);
     } catch (error) {

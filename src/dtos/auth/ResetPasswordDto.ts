@@ -5,29 +5,28 @@ export class ResetPasswordDto {
   @IsNotEmpty()
   @IsString()
   @ApiProperty({
-    name:'password',
-    required:true,
-    type:String,
+    name: 'password',
+    required: true,
+    type: String,
   })
   password: string;
 
-
   @IsString()
   @ApiProperty({
-    name:'code',
-    required:false,
-    type:String,
+    name: 'code',
+    required: false,
+    type: String,
   })
   @IsOptional()
-  code:string | undefined;
+  code: string | undefined;
 
   @IsNotEmpty()
   @IsString()
   @IsEmail()
   @ApiProperty({
-    name:'email',
-    required:true,
-    type:String,
+    name: 'email',
+    required: true,
+    type: String,
   })
-  email:string;
+  email: string;
 }

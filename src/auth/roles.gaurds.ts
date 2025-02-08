@@ -1,7 +1,17 @@
-
 import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { Role, ROLES_KEY } from '../decorators/role.decorator';
+
+export type Payload = {
+  firstname: string | null;
+  email: string;
+  sub: number;
+  roles: {
+    role: {
+      name: string;
+    };
+  }[];
+};
 
 @Injectable()
 export class RolesGuard implements CanActivate {
@@ -15,8 +25,12 @@ export class RolesGuard implements CanActivate {
     if (!requiredRoles) {
       return true;
     }
-    const {user}= context.switchToHttp().getRequest();
-    console.log(user);
-    return requiredRoles.some((role) => user.roles?.some((r:{name:string}) => r.name.toLowerCase().includes(role.toLowerCase())));
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const { user } = context.switchToHttp().getRequest();
+    return requiredRoles.some((role) =>
+      (user as Payload).roles?.some((r: { role: { name: string } }) =>
+        r.role.name.toLowerCase().includes(role.toLowerCase()),
+      ),
+    );
   }
 }

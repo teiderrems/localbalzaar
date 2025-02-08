@@ -4,14 +4,14 @@ export class SignInDto {
   @ApiProperty({
     name: 'email',
     description: 'Email',
-    required:true
+    required: true,
   })
-  email:string;
+  email: string;
 
   @ApiProperty({
     name: 'password',
     description: 'Password',
-    required:true
+    required: true,
   })
-  password:string;
+  password: string;
 }

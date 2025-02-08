@@ -6,6 +6,7 @@
 
 generator client {
   provider = "prisma-client-js"
+  output   = "./generated/client"
 }
 
 datasource db {
@@ -25,6 +26,7 @@ model Role {
 model User {
   id        Int         @id @default(autoincrement()) @db.UnsignedInt
   email     String      @unique
+  emailConfirm   Boolean?  @map("confirm_email") @default(false)
   firstname String?     @map("firstname")
   lastname  String?     @map("lastname")
   password  String?     @map("password_hash")
@@ -215,4 +217,10 @@ model UserGroup {
 
   @@id([userId, groupId])
   @@map("user_groups")
+}
+
+model Token{
+  id Int     @id @default(autoincrement()) @db.UnsignedInt
+  email     String      @unique
+  code String      @unique @map("reset_code")
 }

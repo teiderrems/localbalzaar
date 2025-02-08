@@ -19,7 +19,7 @@ export class CreateDeliveryDto {
 
   @ApiProperty({
     type: Number,
-    name:'orderId',
+    name: 'orderId',
   })
   @IsNumber()
   orderId: number;

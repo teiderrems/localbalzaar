@@ -5,27 +5,27 @@ import { IsNumber } from 'class-validator';
 export class CreatePaymentDto {
   @ApiProperty({
     enum: PaymentMethod,
-    type:String,
-    required:true,
+    type: String,
+    required: true,
     description: 'Payment method is required',
-    name:'method'
+    name: 'method',
   })
-  method:PaymentMethod;
+  method: PaymentMethod;
 
   @IsNumber()
   @ApiProperty({
     type: Number,
     required: true,
     description: 'Payment amount is required',
-    name:'amount',
+    name: 'amount',
   })
-  amount:number;
+  amount: number;
 
   @IsNumber()
   @ApiProperty({
     type: Number,
     required: true,
-    name:'orderId'
+    name: 'orderId',
   })
-  orderId:number;
+  orderId: number;
 }

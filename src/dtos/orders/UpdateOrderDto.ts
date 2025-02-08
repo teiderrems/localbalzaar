@@ -6,15 +6,15 @@ export class UpdateOrderDto {
     name: 'id',
     type: Number,
     nullable: true,
-    required:true
+    required: true,
   })
-  id:number;
+  id: number;
   @ApiProperty({
     enum: OrderStatus,
     name: 'status',
     type: String,
     nullable: true,
-    required:true
+    required: true,
   })
-  status:OrderStatus;
+  status: OrderStatus;
 }

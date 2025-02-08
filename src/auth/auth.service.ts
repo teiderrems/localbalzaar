@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
 import { SignInDto } from '../dtos/auth/SignInDto';
@@ -5,6 +8,8 @@ import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import * as process from 'node:process';
 import { ResetPasswordDto } from '../dtos/auth/ResetPasswordDto';
+import { Payload } from './roles.gaurds';
+import { v6 } from 'uuid';
 
 @Injectable()
 export class AuthService {
@@ -16,12 +21,13 @@ export class AuthService {
   async login(credentials: SignInDto) {
     try {
       const user = await this.prismaService.user.findUnique({
-        where: { email: credentials.email },
+        where: { email: credentials.email, emailConfirm: true },
         select: {
           email: true,
           password: true,
           firstname: true,
           lastname: true,
+          emailConfirm: true,
           id: true,
           userRole: {
             select: {
@@ -54,7 +60,7 @@ export class AuthService {
             expiresIn: '1h',
           }),
           refresh_token: this.jwtService.sign(payload, {
-            secret: process.env.SECRET ?? 'ok',
+            secret: process.env.SECRET_KEY ?? 'ok',
             expiresIn: '1d',
           }),
         });
@@ -70,10 +76,16 @@ export class AuthService {
       where: { email: credentials.email },
       select: { password: true, id: true },
     });
+    const token = await this.prismaService.token.findUniqueOrThrow({
+      where: { email: credentials.email },
+      select: {
+        code: true,
+      },
+    });
     if (
       !user ||
       !(await bcrypt.compare(credentials.password, user.password!)) ||
-      credentials.code !== 'hello'
+      credentials.code !== token.code
     ) {
       return Promise.resolve(null);
     } else {
@@ -82,14 +94,24 @@ export class AuthService {
         this.prismaService.user.update({
           where: { id: user.id },
           data: {
-            password: await bcrypt.hash(user.password!, salt),
+            password: await bcrypt.hash(credentials.password, salt),
           },
         }),
       );
     }
   }
 
-  async confirm_email(email: string): Promise<{ code: string } | null> {
+  async confirm_email(email: string): Promise<{ id: number }> {
+    return await this.prismaService.user.update({
+      where: { email: email },
+      data: { emailConfirm: true },
+      select: {
+        id: true,
+      },
+    });
+  }
+
+  async verif_email(email: string): Promise<{ code: string } | null> {
     const user = await this.prismaService.user.findUnique({
       where: { email },
       select: {
@@ -99,15 +121,32 @@ export class AuthService {
     if (!user) {
       return Promise.resolve(null);
     }
-    return Promise.resolve({ code: 'hello' });
+    const token = await this.prismaService.token.create({
+      data: {
+        email: email,
+        code: v6(),
+      },
+      select: {
+        code: true,
+      },
+    });
+    return { code: token.code };
   }
 
   async refresh_token(refresh_token: string) {
     if (refresh_token) {
       try {
-        return await this.jwtService.verifyAsync(refresh_token, {
-          secret: process.env.SECRET_KEY,
-        });
+        const paylaod = await this.jwtService.verifyAsync<Payload>(
+          refresh_token,
+          {
+            secret: process.env.SECRET_KEY,
+          },
+        );
+        return {
+          access_token: this.jwtService.sign(paylaod, {
+            secret: process.env.SECRET_KEY,
+          }),
+        };
       } catch (error) {
         console.error(error);
       }

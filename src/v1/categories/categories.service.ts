@@ -6,39 +6,40 @@ import { CreateCategorieDto } from '../../dtos/categories/CreateCategorieDto';
 
 @Injectable()
 export class CategoriesService {
+  constructor(private readonly prismaService: PrismaService) {}
 
-  constructor(private readonly  prismaService: PrismaService) {
-  }
-
-  findAll():Observable<CategoriesDto[]>{
-
-    return from(this.prismaService.category.findMany({
-      select:{
-        name:true,
-        id:true,
-      }
-    }));
-  }
-
-  findOne(id:number):Observable<CategoriesDto | null>{
+  findAll(): Observable<CategoriesDto[]> {
     return from(
-      this.prismaService.category.findUnique({where:{id},
-      select:{
-        name:true,
-        id:true,
-      }})
+      this.prismaService.category.findMany({
+        select: {
+          name: true,
+          id: true,
+        },
+      }),
     );
   }
 
-  create(categoryDto:CreateCategorieDto):Observable<any>{
-    return from(this.prismaService.category.create({
-      data:categoryDto,
-    }));
+  findOne(id: number): Observable<CategoriesDto | null> {
+    return from(
+      this.prismaService.category.findUnique({
+        where: { id },
+        select: {
+          name: true,
+          id: true,
+        },
+      }),
+    );
   }
 
-  delete(id:number):Observable<any>{
+  create(categoryDto: CreateCategorieDto): Observable<any> {
     return from(
-      this.prismaService.category.delete({where:{id}})
+      this.prismaService.category.create({
+        data: categoryDto,
+      }),
     );
+  }
+
+  delete(id: number): Observable<any> {
+    return from(this.prismaService.category.delete({ where: { id } }));
   }
 }

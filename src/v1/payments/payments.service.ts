@@ -7,47 +7,60 @@ import { PaymentDto } from '../../dtos/payments/PaymentDto';
 
 @Injectable()
 export class PaymentsService {
-
   constructor(private readonly prismaService: PrismaService) {}
 
-  async findAll(queries:QueryDto): Promise<PaginationResponseDto<PaymentDto>> {
-    if (!!queries.search){
+  async findAll(queries: QueryDto): Promise<PaginationResponseDto<PaymentDto>> {
+    if (queries.search) {
       return {
         data: await this.prismaService.payment.findMany({
-          where:{
-            order:{
-              user:{
-                email:{
-                  contains:queries.search
-                }
-              }
-            }
+          where: {
+            order: {
+              user: {
+                OR: [
+                  {
+                    email: {
+                      contains: queries.search,
+                    },
+                  },
+                  {
+                    firstname: {
+                      contains: queries.search,
+                    },
+                  },
+                  {
+                    lastname: {
+                      contains: queries.search,
+                    },
+                  },
+                ],
+              },
+            },
           },
           select: {
             id: true,
             status: true,
             createdAt: true,
             amount: true,
-            method:true,
+            method: true,
             order: {
               select: {
                 id: true,
-                user:{
-                  select:{
-                    email:true
-                  }
-                }
-              }
+                user: {
+                  select: {
+                    email: true,
+                  },
+                },
+              },
             },
           },
-          orderBy:{
-            id:'asc'
+          orderBy: {
+            id: 'asc',
           },
-          take:Number(queries.limit),
-          skip:Number(queries.offset)*Number(queries.limit)
+          take: Number(queries.limit),
+          skip: Number(queries.offset) * Number(queries.limit),
         }),
         total: await this.prismaService.payment.count(),
-        pageSize: Number(queries.limit)
+        pageSize: Number(queries.limit),
       };
     }
     return {
@@ -57,74 +70,83 @@ export class PaymentsService {
           status: true,
           createdAt: true,
           amount: true,
-          method:true,
+          method: true,
           order: {
             select: {
               id: true,
-              user:{
-                select:{
-                  email:true
-                }
-              }
-            }
+              user: {
+                select: {
+                  email: true,
+                },
+              },
+            },
           },
         },
-        orderBy:{
-          id:'asc'
+        orderBy: {
+          id: 'asc',
         },
-        take:Number(queries.limit),
-        skip:Number(queries.offset)*Number(queries.limit)
+        take: Number(queries.limit),
+        skip: Number(queries.offset) * Number(queries.limit),
       }),
       total: await this.prismaService.payment.count(),
-      pageSize: Number(queries.limit)
+      pageSize: Number(queries.limit),
     };
   }
 
   async findOne(id: number): Promise<PaymentDto | null> {
-    return this.prismaService.payment.findUnique({where: {id},
+    return this.prismaService.payment.findUnique({
+      where: { id },
       select: {
         id: true,
         status: true,
         createdAt: true,
         amount: true,
-        method:true,
+        method: true,
         order: {
           select: {
             id: true,
-            user:{
-              select:{
-                email:true
-              }
-            }
-          }
-        }
-      }
+            user: {
+              select: {
+                email: true,
+              },
+            },
+          },
+        },
+      },
     });
   }
 
-  async create(createPaymentDto: CreatePaymentDto): Promise<{id:number}> {
+  async create(createPaymentDto: CreatePaymentDto): Promise<{ id: number }> {
     return this.prismaService.payment.create({
-        data:{
-          amount:createPaymentDto.amount,
-          method:createPaymentDto.method,
-          order:{
-            connect:{id:createPaymentDto.orderId}
-          }
-        }
-      });
+      data: {
+        amount: createPaymentDto.amount,
+        method: createPaymentDto.method,
+        order: {
+          connect: { id: createPaymentDto.orderId },
+        },
+      },
+    });
   }
 
-  update(id: number, updatePaymentDto: UpdatePaymentDto):Promise<{id:number}>{
-    return this.prismaService.payment.update({where:{id},data:updatePaymentDto,
-      select:{
+  update(
+    id: number,
+    updatePaymentDto: UpdatePaymentDto,
+  ): Promise<{ id: number }> {
+    return this.prismaService.payment.update({
+      where: { id },
+      data: updatePaymentDto,
+      select: {
         id: true,
-      }});
+      },
+    });
   }
 
-  delete(id: number):Promise<{id:number}>{
-    return this.prismaService.payment.delete({where:{id},
-      select:{
+  delete(id: number): Promise<{ id: number }> {
+    return this.prismaService.payment.delete({
+      where: { id },
+      select: {
         id: true,
-      }});
+      },
+    });
   }
 }

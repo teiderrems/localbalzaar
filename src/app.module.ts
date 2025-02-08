@@ -32,17 +32,10 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
     ConfigModule,
     SendmailModule,
     EventEmitterModule.forRoot({
-      wildcard:true
-    })
+      wildcard: true,
+    }),
   ],
-  controllers: [
-    AppController,
-    AuthController,
-  ],
-  providers: [
-    AppService,
-    MulterConfigService,
-    ConfigService
-  ],
+  controllers: [AppController, AuthController],
+  providers: [AppService, MulterConfigService, ConfigService],
 })
 export class AppModule {}

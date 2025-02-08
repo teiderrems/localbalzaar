@@ -4,28 +4,24 @@ import { SendMailDto } from '../dtos/auth/SendMailDto';
 import { OnEvent } from '@nestjs/event-emitter';
 import { ConfigService } from '@nestjs/config';
 
-
 @Injectable()
 export class SendmailService {
-
-
-  constructor(private configService: ConfigService) {
-  }
+  constructor(private configService: ConfigService) {}
 
   @OnEvent('user.*')
-  async sendWelcomeEmail(credential:SendMailDto): Promise<any> { //sendMailDto: SendMailDto
-
-
-    process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0"
+  async sendWelcomeEmail(credential: SendMailDto): Promise<any> {
+    process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
     try {
       const transport = nodemailer.createTransport({
-        port: 1025
+        port: 1025,
       });
-      return  await transport.sendMail({
-        to:credential.email,
-        from:this.configService.get<string>('FROM')??'raoul.teida@gmail.com',
-        subject:credential.subject??'Welcome to LocalBalzaar',
-        html:credential.content??`
+      return await transport.sendMail({
+        to: credential.email,
+        from: this.configService.get<string>('FROM') ?? 'raoul.teida@gmail.com',
+        subject: credential.subject ?? 'Welcome to LocalBalzaar',
+        html:
+          credential.content ??
+          `
      <!DOCTYPE html>
       <html lang="fr">
       <head>
@@ -78,15 +74,14 @@ export class SendmailService {
               <h1>Bienvenue à bord ! ${credential.email}</h1>
               <p>Nous sommes ravis de vous accueillir parmi nous. Préparez-vous à vivre une expérience exceptionnelle.</p>
               <p>Si vous avez des questions, n'hésitez pas à nous contacter.</p>
-              <a href="http://localhost:3000/api" class="button">Commencer</a>
+              <a href="http://localhost:3000/v1/auth/confirm-email" class="button">Confirmer votre adresse e-mail</a>
               <p class="footer">&copy; 2025 Votre Entreprise. Tous droits réservés.</p>
           </div>
       </body>
       </html>
-    `
+    `,
       });
-    }
-    catch (e) {
+    } catch (e) {
       console.error(e);
       return null;
     }

@@ -16,7 +16,7 @@ export class ShopDto {
   @IsString()
   phone: string;
 
-  user:{
+  user: {
     email: string;
   };
   createdAt: Date;

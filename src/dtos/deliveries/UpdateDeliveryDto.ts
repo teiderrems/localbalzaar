@@ -3,22 +3,21 @@ import { ApiProperty } from '@nestjs/swagger';
 import { IsNumber } from 'class-validator';
 
 export class UpdateDeliveryDto {
-
   @ApiProperty({
     type: Number,
     required: true,
-    name:'id'
+    name: 'id',
   })
   @IsNumber()
-  id:number;
+  id: number;
 
   @ApiProperty({
     type: String,
-    enum:DeliveryStatus,
+    enum: DeliveryStatus,
     description: 'Delivery status',
-    name:'status',
+    name: 'status',
     nullable: true,
-    required:false
+    required: false,
   })
-  status:DeliveryStatus;
+  status: DeliveryStatus;
 }
