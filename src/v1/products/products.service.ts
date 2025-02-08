@@ -18,7 +18,12 @@ export class ProductsService {
             OR: [
               {
                 name: {
-                  contains: `%${queries.search}%`,
+                  contains: queries.search,
+                },
+              },
+              {
+                description: {
+                  contains: queries.search,
                 },
               },
               {
