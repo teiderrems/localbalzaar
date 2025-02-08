@@ -1,13 +1,17 @@
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import {
   Body,
   Controller,
   Delete,
   Get,
-  HttpException, HttpStatus,
+  HttpException,
+  HttpStatus,
   NotFoundException,
   Param,
   ParseIntPipe,
-  Post, UseGuards,
+  Post,
+  UseGuards,
 } from '@nestjs/common';
 import { CategoriesService } from './categories.service';
 import { CreateCategorieDto } from '../../dtos/categories/CreateCategorieDto';
@@ -20,18 +24,17 @@ import {
   Public,
 } from '../../auth/jwt-auth.guard/jwt-auth.guard.guard';
 
-@UseGuards(JwtAuthGuardGuard,RolesGuard)
+@UseGuards(JwtAuthGuardGuard, RolesGuard)
 @Controller('v1/categories')
 export class CategoriesController {
   constructor(private readonly categoriesService: CategoriesService) {}
 
   @Public()
   @Get()
-  findAll():Observable<CategorieDto[]>{
+  findAll(): Observable<CategorieDto[]> {
     try {
       return this.categoriesService.findAll();
-    }
-    catch (error) {
+    } catch (error) {
       console.log(error);
       throw new NotFoundException(error.message);
     }
@@ -39,37 +42,44 @@ export class CategoriesController {
 
   @Public()
   @Get(':id')
-  findOne(@Param('id',ParseIntPipe) id: number):Observable<CategorieDto | null>{
+  findOne(
+    @Param('id', ParseIntPipe) id: number,
+  ): Observable<CategorieDto | null> {
     try {
       return this.categoriesService.findOne(id);
-    }
-    catch (error) {
+    } catch (error) {
       console.log(error);
       throw new NotFoundException(error.message);
     }
   }
 
-  @Roles(Role.ADMIN,Role.SUPERUSER)
+  @Roles(Role.ADMIN, Role.SUPERUSER)
   @Post()
-  create(@Body() category:CreateCategorieDto):Observable<any>{
+  create(@Body() category: CreateCategorieDto): Observable<any> {
     try {
       return this.categoriesService.create(category);
-    }
-    catch (error) {
+    } catch (error) {
       console.log(error);
-      throw new HttpException(error.message,HttpStatus.INTERNAL_SERVER_ERROR,error);
+      throw new HttpException(
+        error.message,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+        error,
+      );
     }
   }
 
-  @Roles(Role.ADMIN,Role.SUPERUSER)
+  @Roles(Role.ADMIN, Role.SUPERUSER)
   @Delete(':id')
-  delete(@Param('id',ParseIntPipe) id: number):Observable<any>{
+  delete(@Param('id', ParseIntPipe) id: number): Observable<any> {
     try {
       return this.categoriesService.delete(id);
-    }
-    catch (error) {
+    } catch (error) {
       console.log(error);
-      throw new HttpException(error.message,HttpStatus.INTERNAL_SERVER_ERROR,error);
+      throw new HttpException(
+        error.message,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+        error,
+      );
     }
   }
 }

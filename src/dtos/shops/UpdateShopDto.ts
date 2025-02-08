@@ -5,32 +5,32 @@ import { IsNumber } from 'class-validator';
 export class UpdateShopDto {
   @ApiProperty({
     type: Number,
-    name:'id',
-    required:true,
+    name: 'id',
+    required: true,
   })
   @IsNumber()
-  id:number;
+  id: number;
 
   @ApiProperty({
     type: String,
-    name:'name',
-    required:false,
+    name: 'name',
+    required: false,
   })
   @Optional()
   name?: string;
 
   @ApiProperty({
     type: String,
-    name:'address',
-    required:false,
+    name: 'address',
+    required: false,
   })
   @Optional()
   address?: string;
 
   @ApiProperty({
     type: String,
-    name:'phone',
-    required:false,
+    name: 'phone',
+    required: false,
   })
   @Optional()
   phone?: string;

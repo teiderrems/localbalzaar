@@ -6,39 +6,43 @@ import CreateRoleDto from '../../dtos/roles/CreateRoleDto';
 
 @Injectable()
 export class RolesService {
+  constructor(private readonly prismaService: PrismaService) {}
 
-  constructor(private readonly  prismaService: PrismaService) {
-  }
-
-  findAll():Observable<RoleDto[]>{
-
-    return from(this.prismaService.category.findMany({
-      select:{
-        name:true,
-        id:true,
-      }
-    }));
-  }
-
-  findOne(id:number):Observable<RoleDto | null>{
+  findAll(): Observable<RoleDto[]> {
     return from(
-      this.prismaService.category.findUnique({where:{id},
-        select:{
-          name:true,
-          id:true,
-        }})
+      this.prismaService.role.findMany({
+        select: {
+          name: true,
+          id: true,
+        },
+        orderBy: {
+          id: 'asc',
+        },
+      }),
     );
   }
 
-  create(categoryDto:CreateRoleDto):Observable<any>{
-    return from(this.prismaService.category.create({
-      data:categoryDto,
-    }));
+  findOne(id: number): Observable<RoleDto | null> {
+    return from(
+      this.prismaService.category.findUnique({
+        where: { id },
+        select: {
+          name: true,
+          id: true,
+        },
+      }),
+    );
   }
 
-  delete(id:number):Observable<any>{
+  create(createRoleDto: CreateRoleDto): Observable<any> {
     return from(
-      this.prismaService.category.delete({where:{id}})
+      this.prismaService.category.create({
+        data: createRoleDto,
+      }),
     );
+  }
+
+  delete(id: number): Observable<any> {
+    return from(this.prismaService.category.delete({ where: { id } }));
   }
 }

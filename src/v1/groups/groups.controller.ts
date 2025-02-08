@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import {
   Body,
   Controller,
@@ -6,7 +8,8 @@ import {
   HttpException,
   HttpStatus,
   Param,
-  ParseIntPipe, Post,
+  ParseIntPipe,
+  Post,
   UseGuards,
 } from '@nestjs/common';
 import { GroupsService } from './groups.service';
@@ -16,7 +19,7 @@ import { Role, Roles } from '../../decorators/role.decorator';
 import CreateGroupDto from '../../dtos/groups/CreateGroupDto';
 import { RolesGuard } from '../../auth/roles.gaurds';
 
-@UseGuards(JwtAuthGuardGuard,RolesGuard)
+@UseGuards(JwtAuthGuardGuard, RolesGuard)
 @Controller('v1/groups')
 export class GroupsController {
   constructor(private readonly groupsService: GroupsService) {}
@@ -45,10 +48,13 @@ export class GroupsController {
   create(@Body() createPaymentDto: CreateGroupDto): Observable<any> {
     try {
       return this.groupsService.create(createPaymentDto);
-    }
-    catch (error) {
+    } catch (error) {
       console.error(error);
-      throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR, error);
+      throw new HttpException(
+        error.message,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+        error,
+      );
     }
   }
 
@@ -59,7 +65,11 @@ export class GroupsController {
       return this.groupsService.delete(id);
     } catch (error) {
       console.error(error);
-      throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR, error);
+      throw new HttpException(
+        error.message,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+        error,
+      );
     }
   }
 }

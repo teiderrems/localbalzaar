@@ -10,7 +10,7 @@ import { MulterConfigService } from '../../multer.config.service';
   controllers: [ProductsController],
   imports: [
     MulterModule.registerAsync({
-      useClass:MulterConfigService,
+      useClass: MulterConfigService,
     }),
   ],
 })

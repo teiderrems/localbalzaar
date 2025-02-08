@@ -20,12 +20,12 @@ export class ProductDto {
   isAvailable?: boolean;
 
   @IsString()
-  description: string|null;
+  description: string | null;
 
-  shop:{
+  shop: {
     name: string;
     id: number;
-  }
+  };
 
   createdAt: Date;
   updatedAt: Date;

@@ -5,7 +5,7 @@ import { ShopsService } from './shops.service';
 
 @Module({
   imports: [],
-  controllers: [ShopsController,],
-  providers: [ShopsService,PrismaService],
+  controllers: [ShopsController],
+  providers: [ShopsService, PrismaService],
 })
 export class ShopsModule {}

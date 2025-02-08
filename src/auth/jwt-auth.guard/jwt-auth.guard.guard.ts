@@ -19,11 +19,7 @@ export class JwtAuthGuardGuard extends AuthGuard('jwt') implements CanActivate {
     }
     return super.canActivate(context);
   }
-
 }
-
 
 export const IS_PUBLIC_KEY = 'isPublic';
 export const Public = () => SetMetadata(IS_PUBLIC_KEY, true);
-
-

@@ -1,9 +1,13 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
 import {
   Body,
   Controller,
   HttpException,
   HttpStatus,
   Post,
+  Query,
+  Redirect,
   UnauthorizedException,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
@@ -43,13 +47,26 @@ export class AuthController {
     }
   }
 
-  @Post('confirm-email')
-  confirmEmail(@Body() credential: ConfirmEmailDto) {
+  @Post('verif-email')
+  verifEmail(@Body() credential: ConfirmEmailDto) {
     try {
-      return this.authService.confirm_email(credential.email);
+      return this.authService.verif_email(credential.email);
     } catch (error) {
       console.error(error.message, HttpStatus.INTERNAL_SERVER_ERROR, error);
       throw new UnauthorizedException(error.message, error);
+    }
+  }
+
+  @Post('confirm-email')
+  async confirmEmail(@Query('email') email: string) {
+    try {
+      const user = await this.authService.confirm_email(email);
+      return user
+        ? Redirect('http://localhost:4200/products')
+        : new UnauthorizedException();
+    } catch (error) {
+      console.error(error);
+      throw new HttpException(error.message, HttpStatus.FORBIDDEN, error);
     }
   }
 

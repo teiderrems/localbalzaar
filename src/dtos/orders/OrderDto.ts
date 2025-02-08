@@ -1,14 +1,14 @@
 import { OrderStatus } from '@prisma/client';
 
 export class OrderDto {
-  OrderItem:{
-    quantity:number;
+  OrderItem: {
+    quantity: number;
   }[];
-  totalAmount:number;
-  status:OrderStatus;
-  user:{
-    email:string;
+  totalAmount: number;
+  status: OrderStatus;
+  user: {
+    email: string;
   };
-  createdAt:Date;
-  updatedAt:Date;
+  createdAt: Date;
+  updatedAt: Date;
 }

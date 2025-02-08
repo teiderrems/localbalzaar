@@ -4,16 +4,15 @@ import { UsersController } from './users.controller';
 import { PrismaService } from 'src/prisma.service';
 import { MulterModule } from '@nestjs/platform-express';
 import { MulterConfigService } from '../../multer.config.service';
-import { SendmailService } from '../../sendmail/sendmail.service';
 import { SendmailModule } from '../../sendmail/sendmail.module';
 
 @Module({
-  providers: [UsersService,SendmailService, PrismaService,],
+  providers: [UsersService, PrismaService],
   imports: [
     MulterModule.registerAsync({
-      useClass:MulterConfigService,
+      useClass: MulterConfigService,
     }),
-    SendmailModule
+    SendmailModule,
   ],
   controllers: [UsersController],
 })
