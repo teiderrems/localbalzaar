@@ -17,7 +17,7 @@ class CreateProductDto {
     required: false,
   })
   @IsString()
-  image: string |null;
+  image: string | null;
 
   @ApiProperty({
     type: Number,

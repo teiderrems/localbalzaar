@@ -2,4 +2,4 @@ class CategorieDto {
   name: string;
 }
 
-export  default  CategorieDto;
+export default CategorieDto;

@@ -1,22 +1,26 @@
-import { Body, Controller, HttpException, HttpStatus, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  HttpException,
+  HttpStatus,
+  Post,
+} from '@nestjs/common';
 import { SendMailDto } from './dtos/auth/SendMailDto';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 
 @Controller()
 export class AppController {
-
-  constructor(private eventEmitter:EventEmitter2) {}
+  constructor(private eventEmitter: EventEmitter2) {}
   @Post('email')
-  async sendMail(@Body() sendMailDto: SendMailDto) {
+  sendMail(@Body() sendMailDto: SendMailDto) {
     try {
-      const sdm=new SendMailDto();
-      sdm.subject="hello my dear";
-      sdm.email=sendMailDto.email;
+      const sdm = new SendMailDto();
+      sdm.subject = 'hello my dear';
+      sdm.email = sendMailDto.email;
       return this.eventEmitter.emit('user.mail', sdm);
-    }
-    catch (error) {
+    } catch (error) {
       console.error(error);
-      throw new HttpException(error.message,HttpStatus.BAD_REQUEST,error);
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST, error);
     }
   }
 }

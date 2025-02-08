@@ -6,15 +6,15 @@ class UpdateProductDto {
     type: Number,
     name: 'id',
     nullable: true,
-    required:true,
+    required: true,
   })
-  id:number;
+  id: number;
 
   @ApiProperty({
     type: String,
     name: 'name',
     nullable: true,
-    required:false,
+    required: false,
   })
   @IsString()
   @IsOptional()
@@ -24,7 +24,7 @@ class UpdateProductDto {
     type: String,
     name: 'image',
     nullable: true,
-    required:false,
+    required: false,
   })
   @IsString()
   @IsOptional()
@@ -34,7 +34,7 @@ class UpdateProductDto {
     type: Number,
     name: 'price',
     nullable: true,
-    required:false,
+    required: false,
   })
   @IsOptional()
   @IsNumber()
@@ -44,17 +44,17 @@ class UpdateProductDto {
     type: Number,
     name: 'quantity',
     nullable: true,
-    required:false,
+    required: false,
   })
   @IsNumber()
   @IsOptional()
   quantity?: number;
 
   @ApiProperty({
-    type: Array<Number>,
+    type: Array<number>,
     name: 'categories',
     nullable: true,
-    required:false,
+    required: false,
   })
   @IsNumber({}, { each: true })
   @IsOptional()
