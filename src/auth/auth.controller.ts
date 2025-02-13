@@ -3,6 +3,7 @@
 import {
   Body,
   Controller,
+  Get,
   HttpException,
   HttpStatus,
   Post,
@@ -47,22 +48,22 @@ export class AuthController {
     }
   }
 
-  @Post('verif-email')
-  verifEmail(@Body() credential: ConfirmEmailDto) {
+  @Post('verify-email')
+  verifyEmail(@Body() credential: ConfirmEmailDto) {
     try {
-      return this.authService.verif_email(credential.email);
+      return this.authService.verify_email(credential.email);
     } catch (error) {
       console.error(error.message, HttpStatus.INTERNAL_SERVER_ERROR, error);
       throw new UnauthorizedException(error.message, error);
     }
   }
 
-  @Post('confirm-email')
+  @Get('confirm-email')
   async confirmEmail(@Query('email') email: string) {
     try {
       const user = await this.authService.confirm_email(email);
       return user
-        ? Redirect('http://localhost:4200/products')
+        ? Redirect('http://localhost:3000/v1/products')
         : new UnauthorizedException();
     } catch (error) {
       console.error(error);

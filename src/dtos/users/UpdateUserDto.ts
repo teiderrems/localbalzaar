@@ -28,7 +28,7 @@ class UpdateUserDto {
   })
   @IsOptional()
   @IsString()
-  profile?: string;
+  profile?: string | null;
 
   @ApiProperty({
     type: String,
@@ -49,6 +49,16 @@ class UpdateUserDto {
   @IsOptional()
   @IsString()
   lastname?: string;
+
+  @ApiProperty({
+    type: String,
+    name: 'password',
+    nullable: true,
+    required: false,
+  })
+  @IsOptional()
+  @IsString()
+  password?: string;
 
   @ApiProperty({
     type: String,
