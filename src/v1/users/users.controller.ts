@@ -32,11 +32,16 @@ import { Role, Roles } from '../../decorators/role.decorator';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { RolesGuard } from '../../auth/roles.gaurds';
 import { QueryDto, PaginationResponseDto } from '../../dtos/QueryDto';
+// import supabase from '../../supabase';
+import { ConfigService } from '@nestjs/config';
 
 @UseGuards(JwtAuthGuardGuard, RolesGuard)
 @Controller('v1/users')
 export class UsersController {
-  constructor(private readonly usersServices: UsersService) {}
+  constructor(
+    private readonly usersServices: UsersService,
+    private readonly configService: ConfigService,
+  ) {}
 
   @Get()
   @Roles(Role.ADMIN, Role.SUPERUSER)
@@ -64,7 +69,7 @@ export class UsersController {
   @Public()
   @UseInterceptors(FileInterceptor('profile'))
   @Post()
-  create(
+  async create(
     @UploadedFile(
       new ParseFilePipe({
         validators: [
@@ -76,10 +81,20 @@ export class UsersController {
     )
     file: Express.Multer.File,
     @Body() createUserDto: CreateUserDto,
-  ): Promise<{ id: number }> {
+  ): Promise<boolean> {
     try {
-      createUserDto.profile = file ? `${file.filename}` : undefined;
-      return this.usersServices.create(createUserDto);
+      if (file) {
+        // const { data, error } = await supabase.storage
+        //   .from(this.configService.get<string>('SUPABASE_BUCLET_NAME')!)
+        //   .upload(`profiles/${file.filename}`, file.buffer, {
+        //     cacheControl: '3600',
+        //     upsert: true,
+        //     contentType: file.mimetype,
+        //   });
+        // console.log(error);
+        createUserDto.profile = file ? `${file?.filename}` : undefined;
+      }
+      return await this.usersServices.create(createUserDto);
     } catch (error) {
       console.error(error);
       throw new HttpException(
@@ -92,7 +107,7 @@ export class UsersController {
 
   @UseInterceptors(FileInterceptor('profile'))
   @Patch(':id')
-  update(
+  async update(
     @UploadedFile(
       new ParseFilePipe({
         validators: [

@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable @typescript-eslint/no-unsafe-call */
+
 /* eslint-disable prettier/prettier */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+ 
+ 
 import { PrismaClient } from '@prisma/client';
 import { faker } from '@faker-js/faker';
 
@@ -42,7 +42,7 @@ async function seed() {
           password: await bcrypt.hash("admin1234",salt),
           phone: faker.phone.number({style:'national'}),
           profile: faker.image.avatar(),
-          emailConfirm:false
+          emailConfirm:true
         },
       }),
     ),
