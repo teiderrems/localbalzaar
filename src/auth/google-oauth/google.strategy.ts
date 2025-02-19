@@ -40,7 +40,6 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
       picture: photos[0].value,
     };
-    console.log(user);
     try {
       const currentuser = await this.prisma.user.findFirst({
         where: { email: user.email },
