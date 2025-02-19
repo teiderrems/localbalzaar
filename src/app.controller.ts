@@ -15,8 +15,9 @@ export class AppController {
   sendMail(@Body() sendMailDto: SendMailDto) {
     try {
       const sdm = new SendMailDto();
-      sdm.subject = 'hello my dear';
+      sdm.subject = sendMailDto.subject ?? 'hello my dear';
       sdm.email = sendMailDto.email;
+      sdm.content = sendMailDto.content ?? undefined;
       return this.eventEmitter.emit('user.mail', sdm);
     } catch (error) {
       console.error(error);

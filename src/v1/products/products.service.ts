@@ -12,6 +12,7 @@ export class ProductsService {
 
   async findAll(queries: QueryDto): Promise<PaginationResponseDto<ProductDto>> {
     if (queries.search) {
+      console.log(queries);
       return {
         data: await this.prismaService.product.findMany({
           where: {

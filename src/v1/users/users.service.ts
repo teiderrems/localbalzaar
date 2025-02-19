@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-non-null-asserted-optional-chain */
 import { Injectable } from '@nestjs/common';
 import { Observable, from } from 'rxjs';
 import UserDto from '../../dtos/users/UserDto';
@@ -9,12 +8,17 @@ import { CreateUserDto } from '../../dtos/users/CreateUserDto';
 import { QueryDto, PaginationResponseDto } from '../../dtos/QueryDto';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { UserCreatedEvent } from '../../dtos/users/UserCreatedEvent';
+import fs from 'fs';
+// import supabase from '../../supabase';
+// import { ConfigService } from '@nestjs/config';
+import * as path from 'node:path';
 
 @Injectable()
 export class UsersService {
   constructor(
     private prisma: PrismaService,
     private eventEmitter: EventEmitter2,
+    // private readonly configService: ConfigService,
   ) {}
 
   async findAll(queries: QueryDto): Promise<PaginationResponseDto<UserDto>> {
@@ -107,7 +111,7 @@ export class UsersService {
     );
   }
 
-  async create(createDto: CreateUserDto): Promise<any> {
+  async create(createDto: CreateUserDto): Promise<boolean> {
     const salt = await bcrypt.genSalt(10);
     const hash = await bcrypt.hash(createDto.password, salt);
     const user = await this.prisma.user.create({
@@ -131,13 +135,36 @@ export class UsersService {
           profile: true,
         },
       });
+      // if (file && user && user.profile) {
+      //   await supabase.storage
+      //     .from(process.env.SUPABASE_BUCLET_NAME!)
+      //     .remove([user.profile]);
+      // }
+      if (user?.profile) {
+        fs.rmSync(path.resolve('public', user?.profile));
+      }
       if (file) {
         updateDto.profile = `${file.filename}`;
       } else {
-        updateDto.profile = user?.profile!;
+        updateDto.profile = user?.profile;
       }
+      // if (file) {
+      //   const { data, error } = await supabase.storage
+      //     .from(this.configService.get<string>('SUPABASE_BUCLET_NAME')!)
+      //     .upload(`profiles/${file.filename}`, file.buffer, {
+      //       cacheControl: '3600',
+      //       upsert: true,
+      //       contentType: file.mimetype,
+      //     });
+      //   console.log(error);
+      //   updateDto.profile = data?.fullPath;
+      // }
     } catch (error) {
       console.error(error);
+    }
+    if (updateDto.password) {
+      const salt = await bcrypt.genSalt(10);
+      updateDto.password = await bcrypt.hash(updateDto.password, salt);
     }
     const user = await this.prisma.user.update({
       where: { id },

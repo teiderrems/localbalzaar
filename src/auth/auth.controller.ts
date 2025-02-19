@@ -3,22 +3,59 @@
 import {
   Body,
   Controller,
+  Get,
   HttpException,
   HttpStatus,
   Post,
   Query,
   Redirect,
+  Req,
   UnauthorizedException,
+  UseGuards,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { SignInDto } from '../dtos/auth/SignInDto';
 import { ResetPasswordDto } from '../dtos/auth/ResetPasswordDto';
 import { ConfirmEmailDto } from '../dtos/auth/ConfirmEmailDto';
 import { RefreshTokenDto } from '../dtos/auth/RefreshTokenDto';
+import { GoogleOauthGuard } from './google-oauth/google-oauth.guard';
+import { ConfigService } from '@nestjs/config';
 
-@Controller('auth')
+@Controller('api/auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly authService: AuthService,
+    private readonly configService: ConfigService,
+  ) {}
+
+  @Get('google')
+  @UseGuards(GoogleOauthGuard)
+  async auth() {}
+
+  @Get('google/callback')
+  @UseGuards(GoogleOauthGuard)
+  async googleAuthCallback(@Req() req) {
+    if (req.user) {
+      try {
+        const token = await this.authService.login({
+          email: req.user.email as string,
+          password: this.configService.get<string>(
+            'DEFAULT_PASSWORD',
+          ) as string,
+        });
+        if (token) {
+          return token;
+        }
+        return new UnauthorizedException();
+      } catch (error) {
+        throw new HttpException(
+          error.message,
+          HttpStatus.INTERNAL_SERVER_ERROR,
+          error,
+        );
+      }
+    }
+  }
 
   @Post('login')
   async login(@Body() credentials: SignInDto) {
@@ -47,22 +84,22 @@ export class AuthController {
     }
   }
 
-  @Post('verif-email')
-  verifEmail(@Body() credential: ConfirmEmailDto) {
+  @Post('verify-email')
+  verifyEmail(@Body() credential: ConfirmEmailDto) {
     try {
-      return this.authService.verif_email(credential.email);
+      return this.authService.verify_email(credential.email);
     } catch (error) {
       console.error(error.message, HttpStatus.INTERNAL_SERVER_ERROR, error);
       throw new UnauthorizedException(error.message, error);
     }
   }
 
-  @Post('confirm-email')
+  @Get('confirm-email')
   async confirmEmail(@Query('email') email: string) {
     try {
       const user = await this.authService.confirm_email(email);
       return user
-        ? Redirect('http://localhost:4200/products')
+        ? Redirect('http://localhost:3000/v1/products')
         : new UnauthorizedException();
     } catch (error) {
       console.error(error);

@@ -5,6 +5,7 @@ import { PrismaService } from 'src/prisma.service';
 import { MulterModule } from '@nestjs/platform-express';
 import { MulterConfigService } from '../../multer.config.service';
 import { SendmailModule } from '../../sendmail/sendmail.module';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   providers: [UsersService, PrismaService],
@@ -13,6 +14,7 @@ import { SendmailModule } from '../../sendmail/sendmail.module';
       useClass: MulterConfigService,
     }),
     SendmailModule,
+    ConfigModule,
   ],
   controllers: [UsersController],
 })

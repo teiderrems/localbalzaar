@@ -1,6 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-call */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
 import { SignInDto } from '../dtos/auth/SignInDto';
@@ -82,13 +79,12 @@ export class AuthService {
         code: true,
       },
     });
-    if (
-      !user ||
-      !(await bcrypt.compare(credentials.password, user.password!)) ||
-      credentials.code !== token.code
-    ) {
+    if (!user || credentials.code != token.code) {
       return Promise.resolve(null);
     } else {
+      await this.prismaService.token.delete({
+        where: { email: credentials.email },
+      });
       const salt = await bcrypt.genSalt(10);
       return Promise.resolve(
         this.prismaService.user.update({
@@ -102,7 +98,7 @@ export class AuthService {
   }
 
   async confirm_email(email: string): Promise<{ id: number }> {
-    return await this.prismaService.user.update({
+    return this.prismaService.user.update({
       where: { email: email },
       data: { emailConfirm: true },
       select: {
@@ -111,7 +107,7 @@ export class AuthService {
     });
   }
 
-  async verif_email(email: string): Promise<{ code: string } | null> {
+  async verify_email(email: string): Promise<{ code: string } | null> {
     const user = await this.prismaService.user.findUnique({
       where: { email },
       select: {
