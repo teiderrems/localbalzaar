@@ -9,17 +9,53 @@ import {
   Post,
   Query,
   Redirect,
+  Req,
   UnauthorizedException,
+  UseGuards,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { SignInDto } from '../dtos/auth/SignInDto';
 import { ResetPasswordDto } from '../dtos/auth/ResetPasswordDto';
 import { ConfirmEmailDto } from '../dtos/auth/ConfirmEmailDto';
 import { RefreshTokenDto } from '../dtos/auth/RefreshTokenDto';
+import { GoogleOauthGuard } from './google-oauth/google-oauth.guard';
+import { ConfigService } from '@nestjs/config';
 
-@Controller('auth')
+@Controller('api/auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly authService: AuthService,
+    private readonly configService: ConfigService,
+  ) {}
+
+  @Get('google')
+  @UseGuards(GoogleOauthGuard)
+  async auth() {}
+
+  @Get('google/callback')
+  @UseGuards(GoogleOauthGuard)
+  async googleAuthCallback(@Req() req) {
+    if (req.user) {
+      try {
+        const token = await this.authService.login({
+          email: req.user.email as string,
+          password: this.configService.get<string>(
+            'DEFAULT_PASSWORD',
+          ) as string,
+        });
+        if (token) {
+          return token;
+        }
+        return new UnauthorizedException();
+      } catch (error) {
+        throw new HttpException(
+          error.message,
+          HttpStatus.INTERNAL_SERVER_ERROR,
+          error,
+        );
+      }
+    }
+  }
 
   @Post('login')
   async login(@Body() credentials: SignInDto) {
