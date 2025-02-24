@@ -6,7 +6,7 @@
 
 generator client {
   provider = "prisma-client-js"
-  output   = "./generated/client"
+  // output   = "./generated/client"
 }
 
 datasource db {
@@ -88,7 +88,7 @@ model Product {
   @@map("products")
 }
 
-enum OrderStatus {
+ enum OrderStatus {
   PENDING
   PROCESSING
   COMPLETED
