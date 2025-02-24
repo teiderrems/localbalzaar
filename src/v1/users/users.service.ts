@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { Observable, from } from 'rxjs';
 import UserDto from '../../dtos/users/UserDto';
 import { PrismaService } from 'src/prisma.service';
 import * as bcrypt from 'bcrypt';
@@ -9,8 +8,6 @@ import { QueryDto, PaginationResponseDto } from '../../dtos/QueryDto';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { UserCreatedEvent } from '../../dtos/users/UserCreatedEvent';
 import fs from 'fs';
-// import supabase from '../../supabase';
-// import { ConfigService } from '@nestjs/config';
 import * as path from 'node:path';
 
 @Injectable()
@@ -93,9 +90,8 @@ export class UsersService {
     };
   }
 
-  findOne(id: number): Observable<UserDto | null> {
-    return from(
-      this.prisma.user.findUnique({
+  findOne(id: number): Promise<UserDto | null> {
+    return this.prisma.user.findUnique({
         where: { id },
         omit: { password: true },
         include: {
@@ -107,8 +103,7 @@ export class UsersService {
             },
           },
         },
-      }),
-    );
+      });
   }
 
   async create(createDto: CreateUserDto): Promise<boolean> {

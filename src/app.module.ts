@@ -16,6 +16,7 @@ import { MulterConfigService } from './multer.config.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { SendmailModule } from './sendmail/sendmail.module';
 import { EventEmitterModule } from '@nestjs/event-emitter';
+import { PrismaService } from './prisma.service';
 
 @Module({
   imports: [
@@ -36,6 +37,6 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
     }),
   ],
   controllers: [AppController, AuthController],
-  providers: [AppService, MulterConfigService, ConfigService],
+  providers: [AppService, MulterConfigService, ConfigService ],
 })
 export class AppModule {}

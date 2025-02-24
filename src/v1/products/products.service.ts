@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-non-null-asserted-optional-chain */
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../prisma.service';
 import UpdateProductDto from '../../dtos/products/UpdateProductDto';

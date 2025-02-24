@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../prisma.service';
-import { from, Observable } from 'rxjs';
 import RoleDto from '../../dtos/categories/CategorieDto';
 import CreateRoleDto from '../../dtos/roles/CreateRoleDto';
 
@@ -8,9 +7,8 @@ import CreateRoleDto from '../../dtos/roles/CreateRoleDto';
 export class RolesService {
   constructor(private readonly prismaService: PrismaService) {}
 
-  findAll(): Observable<RoleDto[]> {
-    return from(
-      this.prismaService.role.findMany({
+  findAll(): Promise<RoleDto[]> {
+    return this.prismaService.role.findMany({
         select: {
           name: true,
           id: true,
@@ -18,31 +16,26 @@ export class RolesService {
         orderBy: {
           id: 'asc',
         },
-      }),
-    );
+      });
   }
 
-  findOne(id: number): Observable<RoleDto | null> {
-    return from(
-      this.prismaService.category.findUnique({
+  findOne(id: number): Promise<RoleDto | null> {
+    return this.prismaService.category.findUnique({
         where: { id },
         select: {
           name: true,
           id: true,
         },
-      }),
-    );
+      });
   }
 
-  create(createRoleDto: CreateRoleDto): Observable<any> {
-    return from(
-      this.prismaService.category.create({
+  create(createRoleDto: CreateRoleDto): Promise<any> {
+    return this.prismaService.category.create({
         data: createRoleDto,
-      }),
-    );
+      });
   }
 
-  delete(id: number): Observable<any> {
-    return from(this.prismaService.category.delete({ where: { id } }));
+  delete(id: number): Promise<any> {
+    return this.prismaService.category.delete({ where: { id } });
   }
 }
