@@ -10,7 +10,6 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { RolesService } from './roles.service';
-import { Observable } from 'rxjs';
 import RoleDto from '../../dtos/roles/RoleDto';
 import CreateRoleDto from '../../dtos/roles/CreateRoleDto';
 import { JwtAuthGuardGuard } from '../../auth/jwt-auth.guard/jwt-auth.guard.guard';
@@ -23,7 +22,7 @@ export class RolesController {
   constructor(private readonly rolesService: RolesService) {}
 
   @Get()
-  findAll(): Observable<RoleDto[]> {
+  findAll(): Promise<RoleDto[]> {
     try {
       return this.rolesService.findAll();
     } catch (error) {
@@ -33,7 +32,7 @@ export class RolesController {
   }
 
   @Get(':id')
-  findOne(@Param('id', ParseIntPipe) id: number): Observable<RoleDto | null> {
+  findOne(@Param('id', ParseIntPipe) id: number): Promise<RoleDto | null> {
     try {
       return this.rolesService.findOne(id);
     } catch (error) {
@@ -44,7 +43,7 @@ export class RolesController {
 
   @Roles(Role.ADMIN,Role.SUPERUSER)
   @Post()
-  create(@Body() category: CreateRoleDto): Observable<any> {
+  create(@Body() category: CreateRoleDto): Promise<any> {
     try {
       return this.rolesService.create(category);
     } catch (error) {
@@ -55,7 +54,7 @@ export class RolesController {
 
   @Roles(Role.ADMIN,Role.SUPERUSER)
   @Delete(':id')
-  delete(@Param('id', ParseIntPipe) id: number): Observable<any> {
+  delete(@Param('id', ParseIntPipe) id: number): Promise<any> {
     try {
       return this.rolesService.delete(id);
     } catch (error) {

@@ -8,7 +8,7 @@ import { faker } from '@faker-js/faker';
 
 import * as bcrypt from 'bcrypt';
 
-const prisma = new PrismaClient();
+const prisma:PrismaClient = new PrismaClient();
 
 async function seed() {
   // Seed roles

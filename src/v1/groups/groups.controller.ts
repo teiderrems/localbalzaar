@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import {
   Body,
   Controller,
@@ -13,7 +11,6 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { GroupsService } from './groups.service';
-import { Observable } from 'rxjs';
 import { JwtAuthGuardGuard } from '../../auth/jwt-auth.guard/jwt-auth.guard.guard';
 import { Role, Roles } from '../../decorators/role.decorator';
 import CreateGroupDto from '../../dtos/groups/CreateGroupDto';
@@ -25,7 +22,7 @@ export class GroupsController {
   constructor(private readonly groupsService: GroupsService) {}
 
   @Get()
-  findAll(): Observable<any[]> {
+  findAll(): Promise<any[]> {
     try {
       return this.groupsService.findAll();
     } catch (error) {
@@ -35,7 +32,7 @@ export class GroupsController {
   }
 
   @Get(':id')
-  findOne(@Param('id', ParseIntPipe) id: number): Observable<any> {
+  findOne(@Param('id', ParseIntPipe) id: number): Promise<any> {
     try {
       return this.groupsService.findOne(id);
     } catch (error) {
@@ -45,7 +42,7 @@ export class GroupsController {
   }
 
   @Post()
-  create(@Body() createPaymentDto: CreateGroupDto): Observable<any> {
+  create(@Body() createPaymentDto: CreateGroupDto): Promise<any> {
     try {
       return this.groupsService.create(createPaymentDto);
     } catch (error) {
@@ -60,7 +57,7 @@ export class GroupsController {
 
   @Roles(Role.SUPERUSER || Role.ADMIN)
   @Delete(':id')
-  delete(@Param('id', ParseIntPipe) id: number): Observable<any> {
+  delete(@Param('id', ParseIntPipe) id: number): Promise<any> {
     try {
       return this.groupsService.delete(id);
     } catch (error) {

@@ -57,7 +57,7 @@ export class UsersController {
   }
 
   @Get(':id')
-  findOne(@Param('id', ParseIntPipe) id: number): Observable<UserDto | null> {
+  findOne(@Param('id', ParseIntPipe) id: number): Promise<UserDto | null> {
     try {
       return this.usersServices.findOne(id);
     } catch (error) {

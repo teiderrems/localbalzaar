@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import {
   Body,
   Controller,
@@ -15,7 +13,6 @@ import {
 } from '@nestjs/common';
 import { CategoriesService } from './categories.service';
 import { CreateCategorieDto } from '../../dtos/categories/CreateCategorieDto';
-import { Observable } from 'rxjs';
 import CategorieDto from '../../dtos/categories/CategorieDto';
 import { Role, Roles } from '../../decorators/role.decorator';
 import { RolesGuard } from '../../auth/roles.gaurds';
@@ -31,7 +28,7 @@ export class CategoriesController {
 
   @Public()
   @Get()
-  findAll(): Observable<CategorieDto[]> {
+  findAll(): Promise<CategorieDto[]> {
     try {
       return this.categoriesService.findAll();
     } catch (error) {
@@ -44,7 +41,7 @@ export class CategoriesController {
   @Get(':id')
   findOne(
     @Param('id', ParseIntPipe) id: number,
-  ): Observable<CategorieDto | null> {
+  ): Promise<CategorieDto | null> {
     try {
       return this.categoriesService.findOne(id);
     } catch (error) {
@@ -55,7 +52,7 @@ export class CategoriesController {
 
   @Roles(Role.ADMIN, Role.SUPERUSER)
   @Post()
-  create(@Body() category: CreateCategorieDto): Observable<any> {
+  create(@Body() category: CreateCategorieDto): Promise<any> {
     try {
       return this.categoriesService.create(category);
     } catch (error) {
@@ -70,7 +67,7 @@ export class CategoriesController {
 
   @Roles(Role.ADMIN, Role.SUPERUSER)
   @Delete(':id')
-  delete(@Param('id', ParseIntPipe) id: number): Observable<any> {
+  delete(@Param('id', ParseIntPipe) id: number): Promise<any> {
     try {
       return this.categoriesService.delete(id);
     } catch (error) {
