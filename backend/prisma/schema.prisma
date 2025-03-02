@@ -1,0 +1,226 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  // output   = "./generated/client"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Role {
+  id        Int         @id @default(autoincrement()) @db.UnsignedInt
+  name      String      @unique @map("name")
+  createdAt DateTime    @default(now()) @map("created_at")
+  updatedAt DateTime    @updatedAt @map("updated_at")
+  UserRole  UserRole[]
+  GroupRole GroupRole[]
+}
+
+model User {
+  id        Int         @id @default(autoincrement()) @db.UnsignedInt
+  email     String      @unique
+  emailConfirm   Boolean?  @map("confirm_email") @default(false)
+  firstname String?     @map("firstname")
+  lastname  String?     @map("lastname")
+  password  String?     @map("password_hash")
+  phone     String?     @unique @map("phone_number")
+  createdAt DateTime    @default(now()) @map("created_at")
+  updatedAt DateTime    @updatedAt @map("updated_at")
+  profile   String?     @map("image_url")
+  userRole  UserRole[]
+  shops     Shops[]
+  orders    Order[]
+  UserGroup UserGroup[]
+
+  @@map("users")
+}
+
+model UserRole {
+  userId    Int      @map("user_id") @db.UnsignedInt
+  roleId    Int      @map("role_id") @db.UnsignedInt
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role Role @relation(fields: [roleId], references: [id])
+
+  @@id([userId, roleId])
+  @@map("user_roles")
+}
+
+model Shops {
+  id        Int       @id @default(autoincrement()) @db.UnsignedInt
+  name      String    @map("name")
+  address   String    @map("location")
+  phone     String    @map("phone_number")
+  userId    Int       @map("user_id") @db.UnsignedInt
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  products  Product[]
+
+  @@map("shops")
+}
+
+model Product {
+  id          Int      @id @default(autoincrement()) @db.UnsignedInt
+  name        String   @map("name") @db.VarChar(100)
+  price       Float    @map("price") @db.Float
+  quantity    Int      @map("quantity") @db.UnsignedInt
+  isAvailable Boolean  @default(true) @map("is_available")
+  shopId      Int      @map("shop_id") @db.UnsignedInt
+  image       String?  @map("image_url") @db.VarChar(255)
+  description String?  @map("description") @db.VarChar(255)
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  shop            Shops             @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  OrderItem       OrderItem[]
+  ProductCategory ProductCategory[]
+
+  @@map("products")
+}
+
+ enum OrderStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  CANCELLED
+}
+
+model Order {
+  id          Int         @id @default(autoincrement()) @db.UnsignedInt
+  userId      Int         @map("user_id") @db.UnsignedInt
+  totalAmount Float       @map("total_amount") @db.Float
+  status      OrderStatus @default(PENDING) @map("status")
+  createdAt   DateTime    @default(now()) @map("created_at")
+  updatedAt   DateTime    @updatedAt @map("updated_at")
+
+  user      User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  OrderItem OrderItem[]
+  Payment   Payment[]
+  Delivery  Delivery[]
+
+  @@map("orders")
+}
+
+model OrderItem {
+  orderId   Int      @map("order_id") @db.UnsignedInt
+  productId Int      @map("product_id") @db.UnsignedInt
+  quantity  Int      @map("quantity")
+  price     Float    @map("price") @db.Float
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  order   Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@id([orderId, productId])
+  @@map("order_items")
+}
+
+enum PaymentStatus {
+  PENDING
+  SUCCESS
+  FAILED
+}
+
+enum PaymentMethod {
+  CASH
+  CARD
+  MOBILE
+}
+
+model Payment {
+  id        Int           @id @default(autoincrement()) @db.UnsignedInt
+  orderId   Int           @map("order_id") @db.UnsignedInt
+  amount    Float         @map("amount") @db.Float
+  status    PaymentStatus @default(PENDING) @map("status")
+  method    PaymentMethod @default(CASH) @map("method")
+  createdAt DateTime      @default(now()) @map("created_at")
+
+  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@map("payments")
+}
+
+enum DeliveryStatus {
+  PENDING
+  INTRANSIT
+  DELIVERED
+  CANCELLED
+}
+
+model Delivery {
+  id              Int            @id @default(autoincrement()) @db.UnsignedInt
+  orderId         Int            @map("order_id") @db.UnsignedInt
+  status          DeliveryStatus @default(PENDING) @map("status")
+  deliveryAddress String         @map("delivery_address")
+  deliveryDate    DateTime?      @map("delivery_date")
+  order           Order          @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@map("deliveries")
+}
+
+model Category {
+  id              Int               @id @default(autoincrement()) @db.UnsignedInt
+  name            String            @unique @map("name")
+  createdAt       DateTime          @default(now()) @map("created_at")
+  updatedAt       DateTime          @updatedAt @map("updated_at")
+  ProductCategory ProductCategory[]
+}
+
+model ProductCategory {
+  productId  Int @map("product_id") @db.UnsignedInt
+  categoryId Int @map("category_id") @db.UnsignedInt
+
+  product  Product  @relation(fields: [productId], references: [id], onUpdate: Cascade)
+  category Category @relation(fields: [categoryId], references: [id])
+
+  @@id([productId, categoryId])
+  @@map("product_categories")
+}
+
+model Group {
+  id        Int         @id @default(autoincrement()) @db.UnsignedInt
+  name      String      @unique @map("name")
+  createdAt DateTime    @default(now()) @map("created_at")
+  updatedAt DateTime    @updatedAt @map("updated_at")
+  GroupRole GroupRole[]
+  UserGroup UserGroup[]
+}
+
+model GroupRole {
+  groupId Int @map("group_id") @db.UnsignedInt
+  roleId  Int @map("role_id") @db.UnsignedInt
+
+  group Group @relation(fields: [groupId], references: [id], onUpdate: Cascade)
+  role  Role  @relation(fields: [roleId], references: [id])
+
+  @@id([groupId, roleId])
+  @@map("group_roles")
+}
+
+model UserGroup {
+  userId  Int @map("user_id") @db.UnsignedInt
+  groupId Int @map("group_id") @db.UnsignedInt
+
+  user  User  @relation(fields: [userId], references: [id], onUpdate: Cascade)
+  group Group @relation(fields: [groupId], references: [id])
+
+  @@id([userId, groupId])
+  @@map("user_groups")
+}
+
+model Token{
+  id Int     @id @default(autoincrement()) @db.UnsignedInt
+  email     String      @unique
+  code String      @unique @map("reset_code")
+}

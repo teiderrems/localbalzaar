@@ -1,0 +1,6 @@
+<button [class]="class()" [class.submit]="loading()" [disabled]="disabled()" (click)="onClickHandler($event)" (submit)="onSubmitHandler($event)">
+    <svg [class.isloading]="loading()" class="animate-spin hidden h-5 w-5 mr-3 ..." viewBox="0 0 24 24">
+        <!-- ... -->
+    </svg>
+      {{title()}}
+</button>

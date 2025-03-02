@@ -1,0 +1,22 @@
+.sidebar{
+    @apply flex flex-col justify-between z-20  transition ease-linear duration-300;
+}
+
+.logo{
+    @apply hidden;
+}
+
+.justify{
+    @apply justify-end !important;
+}
+
+.overlay{
+    @apply block bg-opacity-50 z-10;
+}
+
+.active{
+    @apply bg-blue-500 text-white mx-1;
+}
+.active2{
+    @apply border-b-blue-500 border-b-2;
+}

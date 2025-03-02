@@ -1,0 +1,7 @@
+.submit{
+    @apply flex space-x-2 items-center justify-center;
+}
+
+/* .isloading{
+    @apply i;
+} */

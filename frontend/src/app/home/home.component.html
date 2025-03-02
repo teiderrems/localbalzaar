@@ -1,0 +1,76 @@
+<div class="size-full hidden sm:grid grid-cols-1 grid-rows-12">
+  <header
+    class="row-span-1 row-start-1 shadow flex px-24 justify-between items-center"
+  >
+    <a routerLink="/" class="">LocalBalzaar</a>
+    <nav class="flex space-x-4">
+      <a routerLink="/products" routerLinkActive="active2">Products</a>
+      <a routerLink="/shops" routerLinkActive="active2">Shops</a>
+    </nav>
+    <nav class="flex space-x-4">
+      <a routerLink="/login" routerLinkActive="active2">Sign In</a>
+      <a routerLink="/register" routerLinkActive="active2">Sign Up</a>
+    </nav>
+  </header>
+  <main
+    class="row-span-11 row-start-2 overflow-y-auto overflow-x-hidden"
+  >
+    <router-outlet />
+  </main>
+</div>
+
+<div class="size-full relative sm:hidden">
+  <header
+    [class.justify]="showsidebar"
+    class="shadow static flex justify-between items-center"
+  >
+    <a routerLink="/" [class.logo]="showsidebar">LocalBalzaar</a>
+    <button class="p-2" (click)="showsidebar = !showsidebar">
+      <svg
+        class="w-6 h-6"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M4 6h16M4 12h16m-7 6h7"
+        ></path>
+      </svg>
+    </button>
+    <div
+      [class.overlay]="showsidebar"
+      class="hidden w-full h-screen bg-gray-800 opacity-50 absolute inset-0"
+      (click)="showsidebar = !showsidebar"
+    ></div>
+    <div
+      [class.sidebar]="showsidebar"
+      (click)="showsidebar = !showsidebar"
+      class="absolute hidden w-2/3 bg-white opacity-100 shadow-lg h-screen left-0 bottom-0"
+    > 
+      <section class="h-[80px] border-b-2 flex flex-col justify-center">
+        <a routerLink="/" class=" p-2 ">LocalBalzaar</a>
+      </section>
+      <nav class="flex flex-1 pt-10 flex-col space-y-4">
+        <a routerLink="/products" class="shadow border-2 rounded-md p-2 mx-1" routerLinkActive="active">Products</a>
+
+        <a routerLink="/shops" class="shadow border rounded-md p-2 mx-1" routerLinkActive="active">Shops</a>
+
+        <a routerLink="/login" class="shadow border rounded-md p-2 mx-1" routerLinkActive="active">Sign In</a>
+
+        <a routerLink="/register" class="shadow border rounded-md p-2 mx-1" routerLinkActive="active">Sign Up</a>
+      </nav>
+      <section class="flex h-[80px] border-t-2 justify-center items-center">
+        <button class="">dark</button>
+      </section>
+    </div>
+  </header>
+  <main
+    class="h-full w-full overflow-y-auto"
+  >
+    <router-outlet />
+  </main>
+</div>
