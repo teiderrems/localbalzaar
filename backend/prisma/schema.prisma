@@ -10,12 +10,13 @@ generator client {
 }
 
 datasource db {
-  provider = "mysql"
+  provider = "postgres"
   url      = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 model Role {
-  id        Int         @id @default(autoincrement()) @db.UnsignedInt
+  id        Int         @id @default(autoincrement())
   name      String      @unique @map("name")
   createdAt DateTime    @default(now()) @map("created_at")
   updatedAt DateTime    @updatedAt @map("updated_at")
@@ -24,7 +25,7 @@ model Role {
 }
 
 model User {
-  id        Int         @id @default(autoincrement()) @db.UnsignedInt
+  id        Int         @id @default(autoincrement())
   email     String      @unique
   emailConfirm   Boolean?  @map("confirm_email") @default(false)
   firstname String?     @map("firstname")
@@ -43,8 +44,8 @@ model User {
 }
 
 model UserRole {
-  userId    Int      @map("user_id") @db.UnsignedInt
-  roleId    Int      @map("role_id") @db.UnsignedInt
+  userId    Int      @map("user_id")
+  roleId    Int      @map("role_id")
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
@@ -56,11 +57,11 @@ model UserRole {
 }
 
 model Shops {
-  id        Int       @id @default(autoincrement()) @db.UnsignedInt
+  id        Int       @id @default(autoincrement())
   name      String    @map("name")
   address   String    @map("location")
   phone     String    @map("phone_number")
-  userId    Int       @map("user_id") @db.UnsignedInt
+  userId    Int       @map("user_id")
   createdAt DateTime  @default(now()) @map("created_at")
   updatedAt DateTime  @updatedAt @map("updated_at")
   user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -70,12 +71,12 @@ model Shops {
 }
 
 model Product {
-  id          Int      @id @default(autoincrement()) @db.UnsignedInt
+  id          Int      @id @default(autoincrement())
   name        String   @map("name") @db.VarChar(100)
-  price       Float    @map("price") @db.Float
-  quantity    Int      @map("quantity") @db.UnsignedInt
+  price       Float    @map("price") @db.Real
+  quantity    Int      @map("quantity")
   isAvailable Boolean  @default(true) @map("is_available")
-  shopId      Int      @map("shop_id") @db.UnsignedInt
+  shopId      Int      @map("shop_id")
   image       String?  @map("image_url") @db.VarChar(255)
   description String?  @map("description") @db.VarChar(255)
   createdAt   DateTime @default(now()) @map("created_at")
@@ -96,9 +97,9 @@ model Product {
 }
 
 model Order {
-  id          Int         @id @default(autoincrement()) @db.UnsignedInt
-  userId      Int         @map("user_id") @db.UnsignedInt
-  totalAmount Float       @map("total_amount") @db.Float
+  id          Int         @id @default(autoincrement())
+  userId      Int         @map("user_id")
+  totalAmount Float       @map("total_amount") @db.Real
   status      OrderStatus @default(PENDING) @map("status")
   createdAt   DateTime    @default(now()) @map("created_at")
   updatedAt   DateTime    @updatedAt @map("updated_at")
@@ -112,10 +113,10 @@ model Order {
 }
 
 model OrderItem {
-  orderId   Int      @map("order_id") @db.UnsignedInt
-  productId Int      @map("product_id") @db.UnsignedInt
+  orderId   Int      @map("order_id")
+  productId Int      @map("product_id")
   quantity  Int      @map("quantity")
-  price     Float    @map("price") @db.Float
+  price     Float    @map("price") @db.Real
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
@@ -139,9 +140,9 @@ enum PaymentMethod {
 }
 
 model Payment {
-  id        Int           @id @default(autoincrement()) @db.UnsignedInt
-  orderId   Int           @map("order_id") @db.UnsignedInt
-  amount    Float         @map("amount") @db.Float
+  id        Int           @id @default(autoincrement())
+  orderId   Int           @map("order_id")
+  amount    Float         @map("amount") @db.Real
   status    PaymentStatus @default(PENDING) @map("status")
   method    PaymentMethod @default(CASH) @map("method")
   createdAt DateTime      @default(now()) @map("created_at")
@@ -159,8 +160,8 @@ enum DeliveryStatus {
 }
 
 model Delivery {
-  id              Int            @id @default(autoincrement()) @db.UnsignedInt
-  orderId         Int            @map("order_id") @db.UnsignedInt
+  id              Int            @id @default(autoincrement())
+  orderId         Int            @map("order_id")
   status          DeliveryStatus @default(PENDING) @map("status")
   deliveryAddress String         @map("delivery_address")
   deliveryDate    DateTime?      @map("delivery_date")
@@ -170,7 +171,7 @@ model Delivery {
 }
 
 model Category {
-  id              Int               @id @default(autoincrement()) @db.UnsignedInt
+  id              Int               @id @default(autoincrement())
   name            String            @unique @map("name")
   createdAt       DateTime          @default(now()) @map("created_at")
   updatedAt       DateTime          @updatedAt @map("updated_at")
@@ -178,8 +179,8 @@ model Category {
 }
 
 model ProductCategory {
-  productId  Int @map("product_id") @db.UnsignedInt
-  categoryId Int @map("category_id") @db.UnsignedInt
+  productId  Int @map("product_id")
+  categoryId Int @map("category_id")
 
   product  Product  @relation(fields: [productId], references: [id], onUpdate: Cascade)
   category Category @relation(fields: [categoryId], references: [id])
@@ -189,7 +190,7 @@ model ProductCategory {
 }
 
 model Group {
-  id        Int         @id @default(autoincrement()) @db.UnsignedInt
+  id        Int         @id @default(autoincrement())
   name      String      @unique @map("name")
   createdAt DateTime    @default(now()) @map("created_at")
   updatedAt DateTime    @updatedAt @map("updated_at")
@@ -198,8 +199,8 @@ model Group {
 }
 
 model GroupRole {
-  groupId Int @map("group_id") @db.UnsignedInt
-  roleId  Int @map("role_id") @db.UnsignedInt
+  groupId Int @map("group_id")
+  roleId  Int @map("role_id")
 
   group Group @relation(fields: [groupId], references: [id], onUpdate: Cascade)
   role  Role  @relation(fields: [roleId], references: [id])
@@ -209,8 +210,8 @@ model GroupRole {
 }
 
 model UserGroup {
-  userId  Int @map("user_id") @db.UnsignedInt
-  groupId Int @map("group_id") @db.UnsignedInt
+  userId  Int @map("user_id")
+  groupId Int @map("group_id")
 
   user  User  @relation(fields: [userId], references: [id], onUpdate: Cascade)
   group Group @relation(fields: [groupId], references: [id])
@@ -220,7 +221,7 @@ model UserGroup {
 }
 
 model Token{
-  id Int     @id @default(autoincrement()) @db.UnsignedInt
+  id Int     @id @default(autoincrement())
   email     String      @unique
   code String      @unique @map("reset_code")
 }

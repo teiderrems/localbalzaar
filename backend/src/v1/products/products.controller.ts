@@ -30,11 +30,14 @@ import { Role, Roles } from '../../decorators/role.decorator';
 import { RolesGuard } from '../../auth/roles.gaurds';
 import { QueryDto, PaginationResponseDto } from '../../dtos/QueryDto';
 import { ProductDto } from '../../dtos/products/ProductDto';
+import supabase from '../../supabase';
+import { ConfigService } from '@nestjs/config';
+import { v4 as uuidv4 } from 'uuid';
 
 @UseGuards(JwtAuthGuardGuard, RolesGuard)
 @Controller('v1/products')
 export class ProductsController {
-  constructor(private readonly productServices: ProductsService) {}
+  constructor(private readonly productServices: ProductsService,private readonly configService: ConfigService) {}
 
   @Public()
   @Get()
@@ -63,7 +66,7 @@ export class ProductsController {
   @Roles(Role.ADMIN, Role.SUPERUSER)
   @UseInterceptors(FileInterceptor('image'))
   @Post()
-  create(
+  async create(
     @UploadedFile(
       new ParseFilePipe({
         validators: [
@@ -77,7 +80,18 @@ export class ProductsController {
     @Body() createProductDto: CreateProductDto,
   ): Promise<any> {
     try {
-      createProductDto.image = file ? `${file.filename}` : null;
+      if(file){
+        const{data,error} =await supabase.storage.from('local-balzaar/profiles').upload(`${uuidv4()}-${file.originalname}`,file.buffer , {
+          contentType: file.mimetype,
+          upsert:true
+        });
+        if (error) {
+          console.log(error);
+        }
+        else{
+          createProductDto.image = file ? `${this.configService.get<string>('SUPABASE_PROJET_URL')}/storage/v1/object/public/${data.fullPath}` : null;
+        }
+      }
       return this.productServices.create(createProductDto);
     } catch (error) {
       console.error(error);
