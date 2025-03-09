@@ -9,7 +9,7 @@ export class SendmailService {
   constructor(private configService: ConfigService) {}
 
   @OnEvent('user.valided-email')
-  async sendWelcomeEmail(email:string): Promise<any> {
+  async sendWelcomeEmail(email:string,url:string): Promise<any> {
     try {
       const transport = nodemailer.createTransport({
         host: "mail.gmx.com",
@@ -81,7 +81,7 @@ export class SendmailService {
               <h1>Bienvenue à bord ! ${email}</h1>
               <p>Nous sommes ravis de vous accueillir parmi nous. Préparez-vous à vivre une expérience exceptionnelle.</p>
               <p>Si vous avez des questions, n'hésitez pas à nous contacter.</p>
-              <a href="http://localhost:3000/auth/confirm-email?email=${email}" class="button">Confirmer votre adresse e-mail</a>
+              <a href="${url}/auth/confirm-email?email=${email}" class="button">Confirmer votre adresse e-mail</a>
               <p class="footer">&copy; 2025 Votre Entreprise. Tous droits réservés.</p>
           </div>
       </body>
@@ -182,7 +182,7 @@ export class SendmailService {
 
 
   @OnEvent('user.password-reset')
-  async sendResetPasswordEmail(email:string,resetCode:string): Promise<any> {
+  async sendResetPasswordEmail(email:string,resetCode:string,url:string): Promise<any> {
     try {
       const transport = nodemailer.createTransport({
         host: "mail.gmx.com",
@@ -253,7 +253,7 @@ export class SendmailService {
           <div class="container">
               
               <p>Si vous avez des questions, n'hésitez pas à nous contacter.</p>
-              <a href="http://localhost:3000/auth/confirm-email?email=${email}&reset_code=${resetCode}" class="button">Merci de suivre ce lien pour réinitialiser votre mot de passe</a>
+              <a href="${url}/auth/confirm-email?email=${email}&reset_code=${resetCode}" class="button">Merci de suivre ce lien pour réinitialiser votre mot de passe</a>
               <p class="footer">&copy; 2025 Votre Entreprise. Tous droits réservés.</p>
           </div>
       </body>

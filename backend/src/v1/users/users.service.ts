@@ -107,7 +107,7 @@ export class UsersService {
     });
   }
 
-  async create(createDto: CreateUserDto): Promise<boolean> {
+  async create(createDto: CreateUserDto,baseUrl:string): Promise<boolean> {
     const salt = await bcrypt.genSalt(10);
     const hash = await bcrypt.hash(createDto.password, salt);
     const user = await this.prisma.user.create({
@@ -115,7 +115,7 @@ export class UsersService {
       select: { id: true, email: true },
     });
     return Promise.resolve(
-      this.eventEmitter.emit('user.valided-email', user.email),
+      this.eventEmitter.emit('user.valided-email', user.email,baseUrl),
     );
   }
 

@@ -6,7 +6,6 @@ import { JwtService } from '@nestjs/jwt';
 import * as process from 'node:process';
 import { ResetPasswordDto } from '../dtos/auth/ResetPasswordDto';
 import { Payload } from './roles.gaurds';
-import { v6 } from 'uuid';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 
 @Injectable()
@@ -75,7 +74,9 @@ export class AuthService {
       where: { email: credentials.email },
       select: { password: true, id: true,email:true },
     });
-    if (!user || !this.jwtService.verify(credentials.code!)) {
+    if (!user || !this.jwtService.verify(credentials.code!,{
+      secret:process.env.SECRET_KEY
+    })) {
       return Promise.resolve(null);
     } 
     else 
@@ -102,7 +103,7 @@ export class AuthService {
     });
   }
 
-  async verify_email(email: string): Promise<boolean | null> {
+  async verify_email(email: string,baseUrl:string): Promise<boolean | null> {
     const user = await this.prismaService.user.findUnique({
       where: { email },
       select: {
@@ -115,7 +116,7 @@ export class AuthService {
     return Promise.resolve(this.eventEmitter.emit('user.password-reset',email,this.jwtService.sign({email,id:user.id},{
       secret:process.env.SECRET_KEY,
       expiresIn: '5min'
-    })));
+    }),baseUrl));
   }
 
   async refresh_token(refresh_token: string) {

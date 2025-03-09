@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import {
   Body,
   Controller,
@@ -15,6 +13,7 @@ import {
   Patch,
   Post,
   Query,
+  Req,
   UploadedFile,
   UseGuards,
   UseInterceptors,
@@ -80,7 +79,7 @@ export class UsersController {
       }),
     )
     file: Express.Multer.File,
-    @Body() createUserDto: CreateUserDto,
+    @Body() createUserDto: CreateUserDto
   ): Promise<boolean> {
     try {
       if (file) {
@@ -100,7 +99,7 @@ export class UsersController {
             : undefined;
         }
       }
-      return await this.usersServices.create(createUserDto);
+      return await this.usersServices.create(createUserDto,this.configService.get<string>('BASE_URL')!);
     } catch (error) {
       console.error(error);
       throw new HttpException(
