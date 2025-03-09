@@ -112,19 +112,10 @@ export class AuthService {
     if (!user) {
       return Promise.resolve(null);
     }
-    const token = await this.prismaService.token.create({
-      data: {
-        email: email,
-        code: this.jwtService.sign({email,id:user.id},{
-          secret:process.env.SECRET_KEY,
-          expiresIn: '5min'
-        }),
-      },
-      select: {
-        code: true,
-      },
-    });
-    return Promise.resolve(this.eventEmitter.emit('user.password-reset',email,token.code));
+    return Promise.resolve(this.eventEmitter.emit('user.password-reset',email,this.jwtService.sign({email,id:user.id},{
+      secret:process.env.SECRET_KEY,
+      expiresIn: '5min'
+    })));
   }
 
   async refresh_token(refresh_token: string) {
