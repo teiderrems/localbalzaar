@@ -81,7 +81,7 @@ export class ProductsController {
   ): Promise<any> {
     try {
       if(file){
-        const{data,error} =await supabase.storage.from('local-balzaar/profiles').upload(`${uuidv4()}-${file.originalname}`,file.buffer , {
+        const{data,error} =await supabase.storage.from('local-balzaar/products').upload(`${uuidv4()}-${file.originalname}`,file.buffer , {
           contentType: file.mimetype,
           upsert:true
         });

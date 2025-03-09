@@ -148,10 +148,10 @@ export class ProductsService {
     if (file) {
       if (product &&product?.image && product.image.includes('supabase')) {
         const path=product!.image.split('//')[1].split('/')[product!.image.split('//')[1].split('/').length-1];
-        await supabase.storage.from(this.configService.get<string>('SUPABASE_BUCLET_NAME')!+'/images').remove([path])
+        await supabase.storage.from(this.configService.get<string>('SUPABASE_BUCLET_NAME')!+'/products').remove([path])
       }
       const { data, error } = await supabase.storage
-        .from(this.configService.get<string>('SUPABASE_BUCLET_NAME')!+'/images')
+        .from(this.configService.get<string>('SUPABASE_BUCLET_NAME')!+'/products')
         .upload(`${uuidv4()}-${file.originalname}`, file.buffer, {
           cacheControl: '3600',
           upsert: true,
