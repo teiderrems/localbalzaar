@@ -84,16 +84,21 @@ export class UsersController {
   ): Promise<boolean> {
     try {
       if (file) {
-         const{data,error} =await supabase.storage.from(`${this.configService.get<string>('SUPABASE_BUCLET_NAME')!}/profiles`).upload(`${uuidv4()}-${file.originalname}`,file.buffer , {
+        const { data, error } = await supabase.storage
+          .from(
+            `${this.configService.get<string>('SUPABASE_BUCLET_NAME')!}/profiles`,
+          )
+          .upload(`${uuidv4()}-${file.originalname}`, file.buffer, {
             contentType: file.mimetype,
-            upsert:true
+            upsert: true,
           });
-          if (error) {
-            console.log(error);
-          }
-          else{
-            createUserDto.profile = file ? `${this.configService.get<string>('SUPABASE_PROJET_URL')}/storage/v1/object/public/${data.fullPath}` : undefined;
-          }
+        if (error) {
+          console.log(error);
+        } else {
+          createUserDto.profile = file
+            ? `${this.configService.get<string>('SUPABASE_PROJET_URL')}/storage/v1/object/public/${data.fullPath}`
+            : undefined;
+        }
       }
       return await this.usersServices.create(createUserDto);
     } catch (error) {

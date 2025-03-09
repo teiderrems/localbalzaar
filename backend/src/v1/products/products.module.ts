@@ -8,9 +8,6 @@ import { ConfigModule } from '@nestjs/config';
 @Module({
   providers: [ProductsService, PrismaService],
   controllers: [ProductsController],
-  imports: [
-    MulterModule,
-    ConfigModule
-  ],
+  imports: [MulterModule, ConfigModule],
 })
 export class ProductsModule {}

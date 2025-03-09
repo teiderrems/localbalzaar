@@ -39,9 +39,7 @@ export class CategoriesController {
 
   @Public()
   @Get(':id')
-  findOne(
-    @Param('id', ParseIntPipe) id: number,
-  ): Promise<CategorieDto | null> {
+  findOne(@Param('id', ParseIntPipe) id: number): Promise<CategorieDto | null> {
     try {
       return this.categoriesService.findOne(id);
     } catch (error) {

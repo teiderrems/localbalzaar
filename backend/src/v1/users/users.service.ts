@@ -93,18 +93,18 @@ export class UsersService {
 
   findOne(id: number): Promise<UserDto | null> {
     return this.prisma.user.findUnique({
-        where: { id },
-        omit: { password: true },
-        include: {
-          userRole: {
-            select: {
-              role: {
-                select: { name: true },
-              },
+      where: { id },
+      omit: { password: true },
+      include: {
+        userRole: {
+          select: {
+            role: {
+              select: { name: true },
             },
           },
         },
-      });
+      },
+    });
   }
 
   async create(createDto: CreateUserDto): Promise<boolean> {
@@ -133,17 +133,29 @@ export class UsersService {
       });
       if (file) {
         if (user && user?.profile && user?.profile.includes('supabase')) {
-          const path=user!.profile.split('//')[1].split('/')[user!.profile.split('//')[1].split('/').length-1];
-          await supabase.storage.from(this.configService.get<string>('SUPABASE_BUCLET_NAME')!+'/profiles').remove([path])
+          const path = user.profile.split('//')[1].split('/')[
+            user.profile.split('//')[1].split('/').length - 1
+          ];
+          await supabase.storage
+            .from(
+              this.configService.get<string>('SUPABASE_BUCLET_NAME')! +
+                '/profiles',
+            )
+            .remove([path]);
         }
         const { data, error } = await supabase.storage
-          .from(this.configService.get<string>('SUPABASE_BUCLET_NAME')!+'/profiles')
+          .from(
+            this.configService.get<string>('SUPABASE_BUCLET_NAME')! +
+              '/profiles',
+          )
           .upload(`${uuidv4()}-${file.originalname}`, file.buffer, {
             cacheControl: '3600',
             upsert: true,
             contentType: file.mimetype,
           });
-        updateDto.profile = data?`${this.configService.get<string>('SUPABASE_PROJET_URL')}/storage/v1/object/public/${data.fullPath}`:user?.profile;
+        updateDto.profile = data
+          ? `${this.configService.get<string>('SUPABASE_PROJET_URL')}/storage/v1/object/public/${data.fullPath}`
+          : user?.profile;
       }
     } catch (error) {
       console.error(error);

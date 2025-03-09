@@ -6,6 +6,6 @@ import { GroupsController } from './groups.controller';
 @Module({
   imports: [],
   controllers: [GroupsController],
-  providers: [GroupsService,PrismaService],
+  providers: [GroupsService, PrismaService],
 })
 export class GroupsModule {}

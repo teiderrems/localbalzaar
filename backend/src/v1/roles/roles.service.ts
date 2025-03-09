@@ -9,30 +9,30 @@ export class RolesService {
 
   findAll(): Promise<RoleDto[]> {
     return this.prismaService.role.findMany({
-        select: {
-          name: true,
-          id: true,
-        },
-        orderBy: {
-          id: 'asc',
-        },
-      });
+      select: {
+        name: true,
+        id: true,
+      },
+      orderBy: {
+        id: 'asc',
+      },
+    });
   }
 
   findOne(id: number): Promise<RoleDto | null> {
     return this.prismaService.category.findUnique({
-        where: { id },
-        select: {
-          name: true,
-          id: true,
-        },
-      });
+      where: { id },
+      select: {
+        name: true,
+        id: true,
+      },
+    });
   }
 
   create(createRoleDto: CreateRoleDto): Promise<any> {
     return this.prismaService.category.create({
-        data: createRoleDto,
-      });
+      data: createRoleDto,
+    });
   }
 
   delete(id: number): Promise<any> {
