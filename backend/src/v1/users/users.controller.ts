@@ -84,7 +84,7 @@ export class UsersController {
   ): Promise<boolean> {
     try {
       if (file) {
-         const{data,error} =await supabase.storage.from('local-balzaar/profiles').upload(`${uuidv4()}-${file.originalname}`,file.buffer , {
+         const{data,error} =await supabase.storage.from(`${this.configService.get<string>('SUPABASE_BUCLET_NAME')!}/profiles`).upload(`${uuidv4()}-${file.originalname}`,file.buffer , {
             contentType: file.mimetype,
             upsert:true
           });
