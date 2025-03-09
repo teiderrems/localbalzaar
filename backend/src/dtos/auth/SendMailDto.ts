@@ -5,11 +5,11 @@ export class SendMailDto {
   @IsNotEmpty()
   @ApiProperty({
     name: 'email',
-    type: String,
+    type: Array<String>,
     required: true,
   })
   @IsString()
-  email: string;
+  email: string[];
 
   @IsOptional()
   @ApiProperty({

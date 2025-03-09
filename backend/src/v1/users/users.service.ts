@@ -7,15 +7,16 @@ import { CreateUserDto } from '../../dtos/users/CreateUserDto';
 import { QueryDto, PaginationResponseDto } from '../../dtos/QueryDto';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { UserCreatedEvent } from '../../dtos/users/UserCreatedEvent';
-import fs from 'fs';
-import * as path from 'node:path';
+import { ConfigService } from '@nestjs/config';
+import supabase from '../../supabase';
+import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
 export class UsersService {
   constructor(
     private prisma: PrismaService,
     private eventEmitter: EventEmitter2,
-    // private readonly configService: ConfigService,
+    private readonly configService: ConfigService,
   ) {}
 
   async findAll(queries: QueryDto): Promise<PaginationResponseDto<UserDto>> {
@@ -92,21 +93,21 @@ export class UsersService {
 
   findOne(id: number): Promise<UserDto | null> {
     return this.prisma.user.findUnique({
-        where: { id },
-        omit: { password: true },
-        include: {
-          userRole: {
-            select: {
-              role: {
-                select: { name: true },
-              },
+      where: { id },
+      omit: { password: true },
+      include: {
+        userRole: {
+          select: {
+            role: {
+              select: { name: true },
             },
           },
         },
-      });
+      },
+    });
   }
 
-  async create(createDto: CreateUserDto): Promise<boolean> {
+  async create(createDto: CreateUserDto,baseUrl:string): Promise<boolean> {
     const salt = await bcrypt.genSalt(10);
     const hash = await bcrypt.hash(createDto.password, salt);
     const user = await this.prisma.user.create({
@@ -114,7 +115,7 @@ export class UsersService {
       select: { id: true, email: true },
     });
     return Promise.resolve(
-      this.eventEmitter.emit('user.created', new UserCreatedEvent(user.email)),
+      this.eventEmitter.emit('user.valided-email', user.email,baseUrl),
     );
   }
 
@@ -130,30 +131,32 @@ export class UsersService {
           profile: true,
         },
       });
-      // if (file && user && user.profile) {
-      //   await supabase.storage
-      //     .from(process.env.SUPABASE_BUCLET_NAME!)
-      //     .remove([user.profile]);
-      // }
-      if (user?.profile) {
-        fs.rmSync(path.resolve('public', user?.profile));
-      }
       if (file) {
-        updateDto.profile = `${file.filename}`;
-      } else {
-        updateDto.profile = user?.profile;
+        if (user && user?.profile && user?.profile.includes('supabase')) {
+          const path = user.profile.split('//')[1].split('/')[
+            user.profile.split('//')[1].split('/').length - 1
+          ];
+          await supabase.storage
+            .from(
+              this.configService.get<string>('SUPABASE_BUCLET_NAME')! +
+                '/profiles',
+            )
+            .remove([path]);
+        }
+        const { data, error } = await supabase.storage
+          .from(
+            this.configService.get<string>('SUPABASE_BUCLET_NAME')! +
+              '/profiles',
+          )
+          .upload(`${uuidv4()}-${file.originalname}`, file.buffer, {
+            cacheControl: '3600',
+            upsert: true,
+            contentType: file.mimetype,
+          });
+        updateDto.profile = data
+          ? `${this.configService.get<string>('SUPABASE_PROJET_URL')}/storage/v1/object/public/${data.fullPath}`
+          : user?.profile;
       }
-      // if (file) {
-      //   const { data, error } = await supabase.storage
-      //     .from(this.configService.get<string>('SUPABASE_BUCLET_NAME')!)
-      //     .upload(`profiles/${file.filename}`, file.buffer, {
-      //       cacheControl: '3600',
-      //       upsert: true,
-      //       contentType: file.mimetype,
-      //     });
-      //   console.log(error);
-      //   updateDto.profile = data?.fullPath;
-      // }
     } catch (error) {
       console.error(error);
     }

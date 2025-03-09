@@ -4,10 +4,16 @@ import UpdateProductDto from '../../dtos/products/UpdateProductDto';
 import CreateProductDto from '../../dtos/products/CreateProductDto';
 import { ProductDto } from '../../dtos/products/ProductDto';
 import { QueryDto, PaginationResponseDto } from '../../dtos/QueryDto';
+import supabase from '../../supabase';
+import { ConfigService } from '@nestjs/config';
+import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
 export class ProductsService {
-  constructor(private prismaService: PrismaService) {}
+  constructor(
+    private prismaService: PrismaService,
+    private readonly configService: ConfigService,
+  ) {}
 
   async findAll(queries: QueryDto): Promise<PaginationResponseDto<ProductDto>> {
     if (queries.search) {
@@ -143,9 +149,29 @@ export class ProductsService {
       },
     });
     if (file) {
-      updateDto.image = `${file.filename}`;
-    } else {
-      updateDto.image = product?.image!;
+      if (product && product?.image && product.image.includes('supabase')) {
+        const path = product.image.split('//')[1].split('/')[
+          product.image.split('//')[1].split('/').length - 1
+        ];
+        await supabase.storage
+          .from(
+            this.configService.get<string>('SUPABASE_BUCLET_NAME')! +
+              '/products',
+          )
+          .remove([path]);
+      }
+      const { data, error } = await supabase.storage
+        .from(
+          this.configService.get<string>('SUPABASE_BUCLET_NAME')! + '/products',
+        )
+        .upload(`${uuidv4()}-${file.originalname}`, file.buffer, {
+          cacheControl: '3600',
+          upsert: true,
+          contentType: file.mimetype,
+        });
+      updateDto.image = data
+        ? `${this.configService.get<string>('SUPABASE_PROJET_URL')}/storage/v1/object/public/${data.fullPath}`
+        : (product?.image as string);
     }
     return this.prismaService.product.update({
       where: { id },

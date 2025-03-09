@@ -12,11 +12,9 @@ import { RolesModule } from './v1/roles/roles.module';
 import { CategoriesModule } from './v1/categories/categories.module';
 import { AuthController } from './auth/auth.controller';
 import { AuthModule } from './auth/auth.module';
-import { MulterConfigService } from './multer.config.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { SendmailModule } from './sendmail/sendmail.module';
 import { EventEmitterModule } from '@nestjs/event-emitter';
-import { PrismaService } from './prisma.service';
 
 @Module({
   imports: [
@@ -37,6 +35,6 @@ import { PrismaService } from './prisma.service';
     }),
   ],
   controllers: [AppController, AuthController],
-  providers: [AppService, MulterConfigService, ConfigService ],
+  providers: [AppService, ConfigService],
 })
 export class AppModule {}

@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
 import {
   Body,
   Controller,
@@ -21,18 +19,18 @@ import { RefreshTokenDto } from '../dtos/auth/RefreshTokenDto';
 import { GoogleOauthGuard } from './google-oauth/google-oauth.guard';
 import { ConfigService } from '@nestjs/config';
 
-@Controller('api/auth')
+@Controller()
 export class AuthController {
   constructor(
     private readonly authService: AuthService,
     private readonly configService: ConfigService,
   ) {}
 
-  @Get('google')
+  @Get('api/auth/google')
   @UseGuards(GoogleOauthGuard)
   async auth() {}
 
-  @Get('google/callback')
+  @Get('api/auth/google/callback')
   @UseGuards(GoogleOauthGuard)
   async googleAuthCallback(@Req() req) {
     if (req.user) {
@@ -57,7 +55,7 @@ export class AuthController {
     }
   }
 
-  @Post('login')
+  @Post('auth/login')
   async login(@Body() credentials: SignInDto) {
     try {
       const access_token = await this.authService.login(credentials);
@@ -74,7 +72,7 @@ export class AuthController {
     }
   }
 
-  @Post('reset-password')
+  @Post('auth/reset-password')
   resetPassword(@Body() credentials: ResetPasswordDto) {
     try {
       return this.authService.reset_password(credentials);
@@ -84,22 +82,22 @@ export class AuthController {
     }
   }
 
-  @Post('verify-email')
+  @Post('auth/verify-email')
   verifyEmail(@Body() credential: ConfirmEmailDto) {
     try {
-      return this.authService.verify_email(credential.email);
+      return this.authService.verify_email(credential.email,this.configService.get<string>('BASE_URL')!);
     } catch (error) {
       console.error(error.message, HttpStatus.INTERNAL_SERVER_ERROR, error);
       throw new UnauthorizedException(error.message, error);
     }
   }
 
-  @Get('confirm-email')
+  @Get('auth/confirm-email')
   async confirmEmail(@Query('email') email: string) {
     try {
       const user = await this.authService.confirm_email(email);
       return user
-        ? Redirect('http://localhost:3000/v1/products')
+        ? user
         : new UnauthorizedException();
     } catch (error) {
       console.error(error);
@@ -107,7 +105,7 @@ export class AuthController {
     }
   }
 
-  @Post('refresh-token')
+  @Post('auth/refresh-token')
   refreshToken(@Body() credential: RefreshTokenDto) {
     try {
       return this.authService.refresh_token(credential.refresh_token);
