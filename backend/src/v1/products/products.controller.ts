@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import {
   Body,
   Controller,
@@ -37,7 +35,10 @@ import { v4 as uuidv4 } from 'uuid';
 @UseGuards(JwtAuthGuardGuard, RolesGuard)
 @Controller('v1/products')
 export class ProductsController {
-  constructor(private readonly productServices: ProductsService,private readonly configService: ConfigService) {}
+  constructor(
+    private readonly productServices: ProductsService,
+    private readonly configService: ConfigService,
+  ) {}
 
   @Public()
   @Get()
@@ -80,16 +81,19 @@ export class ProductsController {
     @Body() createProductDto: CreateProductDto,
   ): Promise<any> {
     try {
-      if(file){
-        const{data,error} =await supabase.storage.from('local-balzaar/products').upload(`${uuidv4()}-${file.originalname}`,file.buffer , {
-          contentType: file.mimetype,
-          upsert:true
-        });
+      if (file) {
+        const { data, error } = await supabase.storage
+          .from('local-balzaar/products')
+          .upload(`${uuidv4()}-${file.originalname}`, file.buffer, {
+            contentType: file.mimetype,
+            upsert: true,
+          });
         if (error) {
           console.log(error);
-        }
-        else{
-          createProductDto.image = file ? `${this.configService.get<string>('SUPABASE_PROJET_URL')}/storage/v1/object/public/${data.fullPath}` : null;
+        } else {
+          createProductDto.image = file
+            ? `${this.configService.get<string>('SUPABASE_PROJET_URL')}/storage/v1/object/public/${data.fullPath}`
+            : null;
         }
       }
       return this.productServices.create(createProductDto);

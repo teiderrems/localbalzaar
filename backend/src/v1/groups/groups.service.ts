@@ -9,31 +9,31 @@ export class GroupsService {
 
   findAll(): Promise<CategorieDto[]> {
     return this.prismaService.group.findMany({
-        select: {
-          id: true,
-          name: true,
-        },
-      });
+      select: {
+        id: true,
+        name: true,
+      },
+    });
   }
 
   findOne(id: number): Promise<CategorieDto | null> {
     return this.prismaService.group.findUnique({
-        where: { id },
-        select: { id: true, name: true },
-      });
+      where: { id },
+      select: { id: true, name: true },
+    });
   }
 
   create(createGroupDto: CreateGroupDto): Promise<any> {
     return this.prismaService.group.create({
-        data: createGroupDto,
-        select: { id: true },
-      });
+      data: createGroupDto,
+      select: { id: true },
+    });
   }
 
   delete(id: number): Promise<any> {
     return this.prismaService.group.delete({
-        where: { id },
-        select: { id: true },
-      });
+      where: { id },
+      select: { id: true },
+    });
   }
 }

@@ -16,7 +16,7 @@ import { JwtAuthGuardGuard } from '../../auth/jwt-auth.guard/jwt-auth.guard.guar
 import { Role, Roles } from '../../decorators/role.decorator';
 import { RolesGuard } from '../../auth/roles.gaurds';
 
-@UseGuards(JwtAuthGuardGuard,RolesGuard)
+@UseGuards(JwtAuthGuardGuard, RolesGuard)
 @Controller('v1/roles')
 export class RolesController {
   constructor(private readonly rolesService: RolesService) {}
@@ -41,7 +41,7 @@ export class RolesController {
     }
   }
 
-  @Roles(Role.ADMIN,Role.SUPERUSER)
+  @Roles(Role.ADMIN, Role.SUPERUSER)
   @Post()
   create(@Body() category: CreateRoleDto): Promise<any> {
     try {
@@ -52,7 +52,7 @@ export class RolesController {
     }
   }
 
-  @Roles(Role.ADMIN,Role.SUPERUSER)
+  @Roles(Role.ADMIN, Role.SUPERUSER)
   @Delete(':id')
   delete(@Param('id', ParseIntPipe) id: number): Promise<any> {
     try {

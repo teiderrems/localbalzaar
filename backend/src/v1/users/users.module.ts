@@ -8,11 +8,7 @@ import { ConfigModule } from '@nestjs/config';
 
 @Module({
   providers: [UsersService, PrismaService],
-  imports: [
-    MulterModule,
-    SendmailModule,
-    ConfigModule,
-  ],
+  imports: [MulterModule, SendmailModule, ConfigModule],
   controllers: [UsersController],
 })
 export class UsersModule {}
