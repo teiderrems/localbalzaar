@@ -219,9 +219,3 @@ model UserGroup {
   @@id([userId, groupId])
   @@map("user_groups")
 }
-
-model Token{
-  id Int     @id @default(autoincrement())
-  email     String      @unique
-  code String      @unique @map("reset_code")
-}

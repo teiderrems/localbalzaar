@@ -7,12 +7,14 @@ import * as process from 'node:process';
 import { ResetPasswordDto } from '../dtos/auth/ResetPasswordDto';
 import { Payload } from './roles.gaurds';
 import { v6 } from 'uuid';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly prismaService: PrismaService,
     private readonly jwtService: JwtService,
+    private readonly eventEmitter:EventEmitter2
   ) {}
 
   async login(credentials: SignInDto) {
@@ -71,24 +73,17 @@ export class AuthService {
   async reset_password(credentials: ResetPasswordDto) {
     const user = await this.prismaService.user.findUnique({
       where: { email: credentials.email },
-      select: { password: true, id: true },
+      select: { password: true, id: true,email:true },
     });
-    const token = await this.prismaService.token.findUniqueOrThrow({
-      where: { email: credentials.email },
-      select: {
-        code: true,
-      },
-    });
-    if (!user || credentials.code != token.code) {
+    if (!user || !this.jwtService.verify(credentials.code!)) {
       return Promise.resolve(null);
-    } else {
-      await this.prismaService.token.delete({
-        where: { email: credentials.email },
-      });
+    } 
+    else 
+    {
       const salt = await bcrypt.genSalt(10);
       return Promise.resolve(
         this.prismaService.user.update({
-          where: { id: user.id },
+          where: { email: user.email },
           data: {
             password: await bcrypt.hash(credentials.password, salt),
           },
@@ -107,7 +102,7 @@ export class AuthService {
     });
   }
 
-  async verify_email(email: string): Promise<{ code: string } | null> {
+  async verify_email(email: string): Promise<boolean | null> {
     const user = await this.prismaService.user.findUnique({
       where: { email },
       select: {
@@ -120,13 +115,16 @@ export class AuthService {
     const token = await this.prismaService.token.create({
       data: {
         email: email,
-        code: v6(),
+        code: this.jwtService.sign({email,id:user.id},{
+          secret:process.env.SECRET_KEY,
+          expiresIn: '5min'
+        }),
       },
       select: {
         code: true,
       },
     });
-    return { code: token.code };
+    return Promise.resolve(this.eventEmitter.emit('user.password-reset',email,token.code));
   }
 
   async refresh_token(refresh_token: string) {

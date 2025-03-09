@@ -15,10 +15,10 @@ export class AppController {
   sendMail(@Body() sendMailDto: SendMailDto) {
     try {
       const sdm = new SendMailDto();
-      sdm.subject = sendMailDto.subject ?? 'hello my dear';
+      sdm.subject = sendMailDto.subject;
       sdm.email = sendMailDto.email;
-      sdm.content = sendMailDto.content ?? undefined;
-      return this.eventEmitter.emit('user.mail', sdm);
+      sdm.content = sendMailDto.content;
+      return this.eventEmitter.emit('user.email', sdm);
     } catch (error) {
       console.error(error);
       throw new HttpException(error.message, HttpStatus.BAD_REQUEST, error);

@@ -115,7 +115,7 @@ export class UsersService {
       select: { id: true, email: true },
     });
     return Promise.resolve(
-      this.eventEmitter.emit('user.created', new UserCreatedEvent(user.email)),
+      this.eventEmitter.emit('user.valided-email', user.email),
     );
   }
 
