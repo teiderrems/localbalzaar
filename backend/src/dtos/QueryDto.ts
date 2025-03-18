@@ -1,11 +1,6 @@
 import { IsNumber } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
-enum SortOrderEnum {
-  'asc' = 'asc',
-  'desc' = 'desc',
-}
-
 export class QueryDto {
   @IsNumber()
   @ApiProperty({
@@ -49,18 +44,6 @@ export class QueryDto {
     name: 'search',
   })
   search?: string;
-
-  @ApiProperty({
-    name: 'order',
-    type: Object,
-    required: false,
-  })
-  order?:
-    | {
-        field: string;
-        direction: SortOrderEnum;
-      }[]
-    | null;
 }
 
 export class PaginationResponseDto<T> {
