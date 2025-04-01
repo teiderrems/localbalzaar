@@ -22,21 +22,21 @@ export class QueryDto {
 
   @IsNumber()
   @ApiProperty({
-    type: Number,
-    required: true,
-    default: 10,
+    type: Boolean,
+    required: false,
+    default: false,
     name: 'last',
   })
-  last: number;
+  last?: boolean;
 
   @IsNumber()
   @ApiProperty({
-    type: Number,
-    required: true,
-    default: 1,
+    type: Boolean,
+    required: false,
+    default: false,
     name: 'first',
   })
-  first: number;
+  first?: boolean;
 
   @ApiProperty({
     type: String,
@@ -44,6 +44,13 @@ export class QueryDto {
     name: 'search',
   })
   search?: string;
+
+  @ApiProperty({
+    type: String,
+    required: false,
+    name: 'orderCriteria',
+  })
+  orderCriteria?:string
 }
 
 export class PaginationResponseDto<T> {

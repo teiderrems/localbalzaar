@@ -15,27 +15,38 @@ export class ProductsService {
     private readonly configService: ConfigService,
   ) {}
 
+  formatCriteria(criteria?: string): any {
+    if (criteria) {
+      const result=criteria.split(";").map(c => {
+        const array=c.split("=");
+        return `{${array[0]}:'${array[1]}'}`;
+      });
+      return [...result,{id:'asc'}];
+    }
+    return [{id:'asc'}]
+  }
+
   async findAll(queries: QueryDto): Promise<PaginationResponseDto<ProductDto>> {
-    if (queries.search) {
-      console.log(queries);
+    const {limit, offset,search} = queries;
+    if (search) {
       return {
         data: await this.prismaService.product.findMany({
           where: {
             OR: [
               {
                 name: {
-                  contains: queries.search,
+                  contains: search,
                 },
               },
               {
                 description: {
-                  contains: queries.search,
+                  contains: search,
                 },
               },
               {
                 shop: {
                   name: {
-                    contains: queries.search,
+                    contains: search,
                   },
                 },
               },
@@ -58,14 +69,12 @@ export class ProductsService {
               },
             },
           },
-          skip: Number(queries.offset) * Number(queries.limit),
-          take: Number(queries.limit),
-          orderBy: {
-            id: 'asc',
-          },
+          skip: Number(offset) * Number(limit),
+          take: Number(limit),
+          orderBy: { id: 'asc' },
         }),
         total: await this.prismaService.product.count(),
-        pageSize: Number(queries.limit),
+        pageSize: Number(limit),
       };
     }
     return {
@@ -87,14 +96,12 @@ export class ProductsService {
             },
           },
         },
-        skip: Number(queries.offset) * Number(queries.limit),
-        take: Number(queries.limit),
-        orderBy: {
-          id: 'asc',
-        },
+        skip: Number(offset) * Number(limit),
+        take: Number(limit),
+        orderBy:{ id: 'asc' },
       }),
       total: await this.prismaService.product.count(),
-      pageSize: Number(queries.limit),
+      pageSize: Number(limit),
     };
   }
 
