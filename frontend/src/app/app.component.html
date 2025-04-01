@@ -1,0 +1,16 @@
+<div class="h-screen max-h-screen w-screen grid grid-cols-12 grid-rows-12 overflow-hidden">
+  <div class="row-span-2 flex items-center justify-between sm:px-24 px-2 col-span-12 row-start-1 bg-gray-400">
+    <!-- <app-header/> -->
+    <div>LocalBalzaar</div>
+    <ul class="flex space-x-5">
+        <li><a routerLink="#">Product</a></li>
+        <li><a routerLink="#">Shop</a></li>
+        <li><a routerLink="#">Order</a></li>
+        <li><a routerLink="#">Payment</a></li>
+    </ul>
+    <div>LocalBalzaar</div>
+  </div>
+  <div class="row-span-11 row-start-3 bg-slate-900 col-span-12">
+    <router-outlet/>
+  </div>
+</div>

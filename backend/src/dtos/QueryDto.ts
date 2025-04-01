@@ -20,24 +20,6 @@ export class QueryDto {
   })
   offset: number;
 
-  @IsNumber()
-  @ApiProperty({
-    type: Number,
-    required: true,
-    default: 10,
-    name: 'last',
-  })
-  last: number;
-
-  @IsNumber()
-  @ApiProperty({
-    type: Number,
-    required: true,
-    default: 1,
-    name: 'first',
-  })
-  first: number;
-
   @ApiProperty({
     type: String,
     required: false,

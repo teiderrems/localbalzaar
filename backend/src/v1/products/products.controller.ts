@@ -43,10 +43,10 @@ export class ProductsController {
   @Public()
   @Get()
   findAll(
-    @Query() pagination: QueryDto,
+    @Query() query:QueryDto
   ): Promise<PaginationResponseDto<ProductDto>> {
     try {
-      return this.productServices.findAll(pagination);
+      return this.productServices.findAll(query);
     } catch (error) {
       console.error(error);
       throw new HttpException(error.message, HttpStatus.BAD_REQUEST, error);
