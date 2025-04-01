@@ -20,37 +20,12 @@ export class QueryDto {
   })
   offset: number;
 
-  @IsNumber()
-  @ApiProperty({
-    type: Boolean,
-    required: false,
-    default: false,
-    name: 'last',
-  })
-  last?: boolean;
-
-  @IsNumber()
-  @ApiProperty({
-    type: Boolean,
-    required: false,
-    default: false,
-    name: 'first',
-  })
-  first?: boolean;
-
   @ApiProperty({
     type: String,
     required: false,
     name: 'search',
   })
   search?: string;
-
-  @ApiProperty({
-    type: String,
-    required: false,
-    name: 'orderCriteria',
-  })
-  orderCriteria?:string
 }
 
 export class PaginationResponseDto<T> {
