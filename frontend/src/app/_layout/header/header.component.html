@@ -1,11 +1,14 @@
-<header class="row-span-2 flex items-center justify-between px-5 mx-10 col-span-12 row-start-1 bg-gray-400">
+<header class="flex items-center justify-between px-40 w-full h-full">
     <!-- <app-header/> -->
-    <div>LocalBalzaar</div>
-    <ul class="flex space-x-5">
-        <li><a routerLink="#">Product</a></li>
-        <li><a routerLink="#">Shop</a></li>
-        <li><a routerLink="#">Order</a></li>
-        <li><a routerLink="#">Payment</a></li>
-    </ul>
-    <div>LocalBalzaar</div>
+  <a routerLink="/" class="text-2xl font-bold text-gray-900 flex items-center">
+    <span class="text-green-600">Local</span>Bazaar
+  </a>
+    <nav class="flex space-x-5">
+        <a routerLink="/products" routerLinkActive="active_link">Products</a>
+        <a routerLink="/shops" routerLinkActive="active_link">Shops</a>
+    </nav>
+    <span class="flex items-center space-x-4">
+      <button mat-button color="primary"><mat-icon>login</mat-icon> Sign In</button>
+      <button mat-button color="primary"><mat-icon>how_to_reg</mat-icon>Sign Up</button>
+    </span>
   </header>

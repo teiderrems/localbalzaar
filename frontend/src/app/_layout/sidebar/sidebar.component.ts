@@ -9,4 +9,9 @@ import { Component } from '@angular/core';
 })
 export class SidebarComponent {
 
+  menuOpen = false;
+
+  toggleMenu() {
+    this.menuOpen = !this.menuOpen;
+  }
 }
