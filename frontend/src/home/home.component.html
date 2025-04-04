@@ -9,46 +9,27 @@
 </div>
 
 <div class="h-screen block sm:hidden">
-  <mat-drawer-container autosize class="example-container">
+  <mat-drawer-container class="example-container">
     <mat-drawer mode="over" (closed)="open.set(false)" [opened]="open()">
-<!--      <div class="grid grid-cols-1 grid-rows-12 h-full">-->
-<!--        <h1 class=" row-span-1 row-start-1 col-span-1 flex justify-between px-5 text-3xl font-bold items-center">-->
-<!--          <span>LocalBalzaar</span> <button class=" border border-red-600" (click)="open.set(false)" mat-icon-button aria-label="close button"  color="red"><mat-icon>close</mat-icon></button></h1>-->
-<!--        <nav class="flex flex-col row-start-2 row-span-9 space-y-5">-->
-<!--          <a routerLink="/products" (click)="open.set(false)">Products</a>-->
-<!--          <a routerLink="/shops" (click)="open.set(false)">Shops</a>-->
-<!--        </nav>-->
-<!--        <div class="flex flex-col items-start row-start-11 row-span-2 space-y-4">-->
-<!--          <button mat-button (click)="open.set(false)" color="primary"><mat-icon>login</mat-icon> Sign In</button>-->
-<!--          <button mat-button (click)="open.set(false)" color="primary"><mat-icon>how_to_reg</mat-icon>Sign Up</button>-->
-<!--        </div>-->
-<!--      </div>-->
-      <div class="container mx-auto px-6 py-4 flex justify-between items-center">
 
-        <!-- Logo -->
-        <a href="#" class="text-2xl font-bold text-gray-900 flex items-center">
-          <span class="text-green-600">Local</span>Bazaar
-        </a>
+      <div class="sidebare">
+        <div class="h-[60px] border-b px-6 py-4 flex justify-between items-center">
 
-        <!-- Icônes et Boutons -->
-        <div class="flex items-center space-x-4">
-          <a href="#" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700">
-            Connexion
+          <!-- Logo -->
+          <a href="#" class="text-2xl font-bold text-gray-900 flex items-center">
+            <span class="text-green-600">Local</span>Bazaar
           </a>
+          <button mat-icon-button  (click)="open.set(false)"><mat-icon>close</mat-icon></button>
         </div>
-          <!-- Menu Mobile -->
-      </div>
-      <div class="md:hidden flex-grow bg-white border-t">
-        <nav class="flex flex-col space-y-4 p-4">
+        <nav class="flex flex-col flex-grow space-y-4 p-4">
           <a routerLink="/products" (click)="open.set(false)">Products</a>
           <a routerLink="/shops" (click)="open.set(false)">Shops</a>
           <a href="#" class="text-gray-700 hover:text-green-600">Promotions</a>
           <a href="#" class="text-gray-700 hover:text-green-600">Contact</a>
         </nav>
-      </div>
-      <div class="flex flex-col items-start row-start-11 row-span-2 space-y-4">
-        <button mat-button (click)="open.set(false)" color="primary"><mat-icon>login</mat-icon> Sign In</button>
-        <button mat-button (click)="open.set(false)" color="primary"><mat-icon>how_to_reg</mat-icon>Sign Up</button>
+        <div class="h-[100px] w-full  border-t">
+          <h1 class="text-center text-2xl font-bold mt-4">&copy; 2025</h1>
+        </div>
       </div>
     </mat-drawer>
     <mat-drawer-content>

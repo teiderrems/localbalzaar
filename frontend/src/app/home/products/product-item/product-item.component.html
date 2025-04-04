@@ -1,0 +1,14 @@
+<mat-card class="example-card" (click)="selectedProduct.set(product())"  appearance="outlined">
+    <mat-card-content>
+      <div class="flex flex-col mb-2 gap-2">
+        <img class="flex-grow" [src]="product().image" [alt]="product().name">
+        <p class="text-pretty">{{product().name}}</p>
+      </div>
+      <mat-icon [matBadge]="product().price| currency">price_check</mat-icon>
+    </mat-card-content>
+    <mat-card-actions>
+        <button mat-icon-button color="primary" aria-label="Example icon button with a vertical three dot icon"><mat-icon>thumb_up</mat-icon></button>
+        <button mat-icon-button color="accent" aria-label="Example icon button with a vertical three dot icon"><mat-icon>thumb_down</mat-icon></button>
+        <button mat-icon-button><mat-icon>share</mat-icon></button>
+    </mat-card-actions>
+</mat-card>

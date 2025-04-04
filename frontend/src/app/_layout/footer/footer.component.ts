@@ -12,5 +12,5 @@ import {DatePipe} from '@angular/common';
 })
 export class FooterComponent {
 
-    protected readonly Date = Date;
+    protected readonly date = Date.now();
 }
