@@ -28,10 +28,12 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
     RolesModule,
     CategoriesModule,
     AuthModule,
-    ConfigModule,
     SendmailModule,
     EventEmitterModule.forRoot({
       wildcard: true,
+    }),
+    ConfigModule.forRoot({
+      isGlobal: true,
     }),
   ],
   controllers: [AppController, AuthController],
